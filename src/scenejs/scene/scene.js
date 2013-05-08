@@ -488,6 +488,40 @@ new (function() {
         return node ? SceneJS._selectNode(node) : null;
     };
 
+    Scene.prototype.findNodeBySIDs = function(nodeId, sidList) {
+        function _findNodeWithSID(root, sid) {
+            var nodesToCheck = [];
+
+            root.children.forEach(function(child) {
+                nodesToCheck.push(child);
+            });
+
+            while (nodesToCheck.length > 0) {
+                var node = nodesToCheck.shift();
+                if (node.attr.sid == sid) {
+                    return node;
+                }
+
+                node.children.forEach(function(child) {
+                    nodesToCheck.push(child);
+                });
+            }
+
+            return null;
+        }
+
+        var node = this.nodeMap.items[nodeId];
+        var i;// = 0;
+
+        for (var i = 0; i < sidList.length && node != null; ++i) {
+        //while (node != null && i < sidList.length) {
+            node = _findNodeWithSID(node, sidList[i]);
+            //++i;
+        }
+
+        return node ? SceneJS._selectNode(node) : null;
+    };
+
     SceneJS.reset = function() {
         var scenes = getAllScenes();
         var temp = [];

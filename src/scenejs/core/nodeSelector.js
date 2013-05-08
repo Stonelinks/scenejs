@@ -52,6 +52,13 @@
         return this._targetNode.findNode(nodeId);
     };
 
+    NodeSelector.prototype.findNodeBySIDs = function (nodeId, sidList) {
+        if (this._targetNode.attr.type != "scene") {
+            throw SceneJS_errorModule.fatalError("findNodeBySIDs attempted on node that is not a \"scene\" type: '" + this._targetNode.attr.id + "'");
+        }
+        return this._targetNode.findNodeBySIDs(nodeId, sidList);
+    };
+
     /** Find nodes in scene that have IDs matching the given regular expression
      *
      */
