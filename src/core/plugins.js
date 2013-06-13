@@ -30,6 +30,7 @@ SceneJS.Plugins = new (function () {
             var plugin = plugins[pluginType];
             if (plugin) {
                 ok(plugin);
+                return;
             }
         }
         // lazy-load
