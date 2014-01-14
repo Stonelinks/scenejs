@@ -9496,6 +9496,15 @@ SceneJS.Node.prototype._doDestroy = function () {
 
     return this;
 };
+SceneJS_PubSubProxy = function (scene, proxy) {
+    this.scene = scene;
+    this.proxy = proxy;
+
+};
+
+
+
+
 /**
  * @class Manages creation, recycle and destruction of {@link SceneJS.Node} instances
  * @private

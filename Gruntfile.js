@@ -36,6 +36,7 @@ var sjsFiles = [
     'src/core/scene/core.js',
     'src/core/scene/coreFactory.js',
     'src/core/scene/node.js',
+    'src/core/scene/pubSubProxy.js',
     'src/core/scene/nodeFactory.js',
     'src/core/scene/camera.js',
     'src/core/scene/clips.js',
