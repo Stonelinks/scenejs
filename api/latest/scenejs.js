@@ -1,48 +1,2089 @@
 /*
- * SceneJS WebGL Scene Graph Library for JavaScript
+ * SceneJS V3.2.0
+ * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
+ *
+ * Built on 2014-01-14
+ *
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://scenejs.org/license
- * Copyright 2010, Lindsay Kay
+ * Copyright 2014, Lindsay Kay
  *
- *
- */// Only define RequireJS if not already present
-if (undefined === require) {/*
- RequireJS 2.1.6 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
- Available via the MIT or new BSD license.
- see: http://github.com/jrburke/requirejs for details
  */
-var requirejs,require,define;
-(function(ba){function J(b){return"[object Function]"===N.call(b)}function K(b){return"[object Array]"===N.call(b)}function z(b,c){if(b){var d;for(d=0;d<b.length&&(!b[d]||!c(b[d],d,b));d+=1);}}function O(b,c){if(b){var d;for(d=b.length-1;-1<d&&(!b[d]||!c(b[d],d,b));d-=1);}}function t(b,c){return ha.call(b,c)}function m(b,c){return t(b,c)&&b[c]}function H(b,c){for(var d in b)if(t(b,d)&&c(b[d],d))break}function S(b,c,d,m){c&&H(c,function(c,l){if(d||!t(b,l))m&&"string"!==typeof c?(b[l]||(b[l]={}),S(b[l],
-    c,d,m)):b[l]=c});return b}function v(b,c){return function(){return c.apply(b,arguments)}}function ca(b){throw b;}function da(b){if(!b)return b;var c=ba;z(b.split("."),function(b){c=c[b]});return c}function B(b,c,d,m){c=Error(c+"\nhttp://requirejs.org/docs/errors.html#"+b);c.requireType=b;c.requireModules=m;d&&(c.originalError=d);return c}function ia(b){function c(a,f,C){var e,n,b,c,d,T,k,g=f&&f.split("/");e=g;var l=j.map,h=l&&l["*"];if(a&&"."===a.charAt(0))if(f){e=m(j.pkgs,f)?g=[f]:g.slice(0,g.length-
-    1);f=a=e.concat(a.split("/"));for(e=0;f[e];e+=1)if(n=f[e],"."===n)f.splice(e,1),e-=1;else if(".."===n)if(1===e&&(".."===f[2]||".."===f[0]))break;else 0<e&&(f.splice(e-1,2),e-=2);e=m(j.pkgs,f=a[0]);a=a.join("/");e&&a===f+"/"+e.main&&(a=f)}else 0===a.indexOf("./")&&(a=a.substring(2));if(C&&l&&(g||h)){f=a.split("/");for(e=f.length;0<e;e-=1){b=f.slice(0,e).join("/");if(g)for(n=g.length;0<n;n-=1)if(C=m(l,g.slice(0,n).join("/")))if(C=m(C,b)){c=C;d=e;break}if(c)break;!T&&(h&&m(h,b))&&(T=m(h,b),k=e)}!c&&
-    T&&(c=T,d=k);c&&(f.splice(0,d,c),a=f.join("/"))}return a}function d(a){A&&z(document.getElementsByTagName("script"),function(f){if(f.getAttribute("data-requiremodule")===a&&f.getAttribute("data-requirecontext")===k.contextName)return f.parentNode.removeChild(f),!0})}function p(a){var f=m(j.paths,a);if(f&&K(f)&&1<f.length)return d(a),f.shift(),k.require.undef(a),k.require([a]),!0}function g(a){var f,b=a?a.indexOf("!"):-1;-1<b&&(f=a.substring(0,b),a=a.substring(b+1,a.length));return[f,a]}function l(a,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          f,b,e){var n,D,i=null,d=f?f.name:null,l=a,h=!0,j="";a||(h=!1,a="_@r"+(N+=1));a=g(a);i=a[0];a=a[1];i&&(i=c(i,d,e),D=m(r,i));a&&(i?j=D&&D.normalize?D.normalize(a,function(a){return c(a,d,e)}):c(a,d,e):(j=c(a,d,e),a=g(j),i=a[0],j=a[1],b=!0,n=k.nameToUrl(j)));b=i&&!D&&!b?"_unnormalized"+(O+=1):"";return{prefix:i,name:j,parentMap:f,unnormalized:!!b,url:n,originalName:l,isDefine:h,id:(i?i+"!"+j:j)+b}}function s(a){var f=a.id,b=m(q,f);b||(b=q[f]=new k.Module(a));return b}function u(a,f,b){var e=a.id,n=m(q,
-    e);if(t(r,e)&&(!n||n.defineEmitComplete))"defined"===f&&b(r[e]);else if(n=s(a),n.error&&"error"===f)b(n.error);else n.on(f,b)}function w(a,f){var b=a.requireModules,e=!1;if(f)f(a);else if(z(b,function(f){if(f=m(q,f))f.error=a,f.events.error&&(e=!0,f.emit("error",a))}),!e)h.onError(a)}function x(){U.length&&(ja.apply(I,[I.length-1,0].concat(U)),U=[])}function y(a){delete q[a];delete W[a]}function G(a,f,b){var e=a.map.id;a.error?a.emit("error",a.error):(f[e]=!0,z(a.depMaps,function(e,c){var d=e.id,
-    g=m(q,d);g&&(!a.depMatched[c]&&!b[d])&&(m(f,d)?(a.defineDep(c,r[d]),a.check()):G(g,f,b))}),b[e]=!0)}function E(){var a,f,b,e,n=(b=1E3*j.waitSeconds)&&k.startTime+b<(new Date).getTime(),c=[],i=[],g=!1,l=!0;if(!X){X=!0;H(W,function(b){a=b.map;f=a.id;if(b.enabled&&(a.isDefine||i.push(b),!b.error))if(!b.inited&&n)p(f)?g=e=!0:(c.push(f),d(f));else if(!b.inited&&(b.fetched&&a.isDefine)&&(g=!0,!a.prefix))return l=!1});if(n&&c.length)return b=B("timeout","Load timeout for modules: "+c,null,c),b.contextName=
-    k.contextName,w(b);l&&z(i,function(a){G(a,{},{})});if((!n||e)&&g)if((A||ea)&&!Y)Y=setTimeout(function(){Y=0;E()},50);X=!1}}function F(a){t(r,a[0])||s(l(a[0],null,!0)).init(a[1],a[2])}function L(a){var a=a.currentTarget||a.srcElement,b=k.onScriptLoad;a.detachEvent&&!Z?a.detachEvent("onreadystatechange",b):a.removeEventListener("load",b,!1);b=k.onScriptError;(!a.detachEvent||Z)&&a.removeEventListener("error",b,!1);return{node:a,id:a&&a.getAttribute("data-requiremodule")}}function M(){var a;for(x();I.length;){a=
-    I.shift();if(null===a[0])return w(B("mismatch","Mismatched anonymous define() module: "+a[a.length-1]));F(a)}}var X,$,k,P,Y,j={waitSeconds:7,baseUrl:"./",paths:{},pkgs:{},shim:{},config:{}},q={},W={},aa={},I=[],r={},V={},N=1,O=1;P={require:function(a){return a.require?a.require:a.require=k.makeRequire(a.map)},exports:function(a){a.usingExports=!0;if(a.map.isDefine)return a.exports?a.exports:a.exports=r[a.map.id]={}},module:function(a){return a.module?a.module:a.module={id:a.map.id,uri:a.map.url,config:function(){var b=
-    m(j.pkgs,a.map.id);return(b?m(j.config,a.map.id+"/"+b.main):m(j.config,a.map.id))||{}},exports:r[a.map.id]}}};$=function(a){this.events=m(aa,a.id)||{};this.map=a;this.shim=m(j.shim,a.id);this.depExports=[];this.depMaps=[];this.depMatched=[];this.pluginMaps={};this.depCount=0};$.prototype={init:function(a,b,c,e){e=e||{};if(!this.inited){this.factory=b;if(c)this.on("error",c);else this.events.error&&(c=v(this,function(a){this.emit("error",a)}));this.depMaps=a&&a.slice(0);this.errback=c;this.inited=
-    !0;this.ignore=e.ignore;e.enabled||this.enabled?this.enable():this.check()}},defineDep:function(a,b){this.depMatched[a]||(this.depMatched[a]=!0,this.depCount-=1,this.depExports[a]=b)},fetch:function(){if(!this.fetched){this.fetched=!0;k.startTime=(new Date).getTime();var a=this.map;if(this.shim)k.makeRequire(this.map,{enableBuildCallback:!0})(this.shim.deps||[],v(this,function(){return a.prefix?this.callPlugin():this.load()}));else return a.prefix?this.callPlugin():this.load()}},load:function(){var a=
-    this.map.url;V[a]||(V[a]=!0,k.load(this.map.id,a))},check:function(){if(this.enabled&&!this.enabling){var a,b,c=this.map.id;b=this.depExports;var e=this.exports,n=this.factory;if(this.inited)if(this.error)this.emit("error",this.error);else{if(!this.defining){this.defining=!0;if(1>this.depCount&&!this.defined){if(J(n)){if(this.events.error&&this.map.isDefine||h.onError!==ca)try{e=k.execCb(c,n,b,e)}catch(d){a=d}else e=k.execCb(c,n,b,e);this.map.isDefine&&((b=this.module)&&void 0!==b.exports&&b.exports!==
-    this.exports?e=b.exports:void 0===e&&this.usingExports&&(e=this.exports));if(a)return a.requireMap=this.map,a.requireModules=this.map.isDefine?[this.map.id]:null,a.requireType=this.map.isDefine?"define":"require",w(this.error=a)}else e=n;this.exports=e;if(this.map.isDefine&&!this.ignore&&(r[c]=e,h.onResourceLoad))h.onResourceLoad(k,this.map,this.depMaps);y(c);this.defined=!0}this.defining=!1;this.defined&&!this.defineEmitted&&(this.defineEmitted=!0,this.emit("defined",this.exports),this.defineEmitComplete=
-    !0)}}else this.fetch()}},callPlugin:function(){var a=this.map,b=a.id,d=l(a.prefix);this.depMaps.push(d);u(d,"defined",v(this,function(e){var n,d;d=this.map.name;var g=this.map.parentMap?this.map.parentMap.name:null,C=k.makeRequire(a.parentMap,{enableBuildCallback:!0});if(this.map.unnormalized){if(e.normalize&&(d=e.normalize(d,function(a){return c(a,g,!0)})||""),e=l(a.prefix+"!"+d,this.map.parentMap),u(e,"defined",v(this,function(a){this.init([],function(){return a},null,{enabled:!0,ignore:!0})})),
-    d=m(q,e.id)){this.depMaps.push(e);if(this.events.error)d.on("error",v(this,function(a){this.emit("error",a)}));d.enable()}}else n=v(this,function(a){this.init([],function(){return a},null,{enabled:!0})}),n.error=v(this,function(a){this.inited=!0;this.error=a;a.requireModules=[b];H(q,function(a){0===a.map.id.indexOf(b+"_unnormalized")&&y(a.map.id)});w(a)}),n.fromText=v(this,function(e,c){var d=a.name,g=l(d),i=Q;c&&(e=c);i&&(Q=!1);s(g);t(j.config,b)&&(j.config[d]=j.config[b]);try{h.exec(e)}catch(D){return w(B("fromtexteval",
-    "fromText eval for "+b+" failed: "+D,D,[b]))}i&&(Q=!0);this.depMaps.push(g);k.completeLoad(d);C([d],n)}),e.load(a.name,C,n,j)}));k.enable(d,this);this.pluginMaps[d.id]=d},enable:function(){W[this.map.id]=this;this.enabling=this.enabled=!0;z(this.depMaps,v(this,function(a,b){var c,e;if("string"===typeof a){a=l(a,this.map.isDefine?this.map:this.map.parentMap,!1,!this.skipMap);this.depMaps[b]=a;if(c=m(P,a.id)){this.depExports[b]=c(this);return}this.depCount+=1;u(a,"defined",v(this,function(a){this.defineDep(b,
-    a);this.check()}));this.errback&&u(a,"error",v(this,this.errback))}c=a.id;e=q[c];!t(P,c)&&(e&&!e.enabled)&&k.enable(a,this)}));H(this.pluginMaps,v(this,function(a){var b=m(q,a.id);b&&!b.enabled&&k.enable(a,this)}));this.enabling=!1;this.check()},on:function(a,b){var c=this.events[a];c||(c=this.events[a]=[]);c.push(b)},emit:function(a,b){z(this.events[a],function(a){a(b)});"error"===a&&delete this.events[a]}};k={config:j,contextName:b,registry:q,defined:r,urlFetched:V,defQueue:I,Module:$,makeModuleMap:l,
-    nextTick:h.nextTick,onError:w,configure:function(a){a.baseUrl&&"/"!==a.baseUrl.charAt(a.baseUrl.length-1)&&(a.baseUrl+="/");var b=j.pkgs,c=j.shim,e={paths:!0,config:!0,map:!0};H(a,function(a,b){e[b]?"map"===b?(j.map||(j.map={}),S(j[b],a,!0,!0)):S(j[b],a,!0):j[b]=a});a.shim&&(H(a.shim,function(a,b){K(a)&&(a={deps:a});if((a.exports||a.init)&&!a.exportsFn)a.exportsFn=k.makeShimExports(a);c[b]=a}),j.shim=c);a.packages&&(z(a.packages,function(a){a="string"===typeof a?{name:a}:a;b[a.name]={name:a.name,
-        location:a.location||a.name,main:(a.main||"main").replace(ka,"").replace(fa,"")}}),j.pkgs=b);H(q,function(a,b){!a.inited&&!a.map.unnormalized&&(a.map=l(b))});if(a.deps||a.callback)k.require(a.deps||[],a.callback)},makeShimExports:function(a){return function(){var b;a.init&&(b=a.init.apply(ba,arguments));return b||a.exports&&da(a.exports)}},makeRequire:function(a,f){function d(e,c,g){var i,j;f.enableBuildCallback&&(c&&J(c))&&(c.__requireJsBuild=!0);if("string"===typeof e){if(J(c))return w(B("requireargs",
-        "Invalid require call"),g);if(a&&t(P,e))return P[e](q[a.id]);if(h.get)return h.get(k,e,a,d);i=l(e,a,!1,!0);i=i.id;return!t(r,i)?w(B("notloaded",'Module name "'+i+'" has not been loaded yet for context: '+b+(a?"":". Use require([])"))):r[i]}M();k.nextTick(function(){M();j=s(l(null,a));j.skipMap=f.skipMap;j.init(e,c,g,{enabled:!0});E()});return d}f=f||{};S(d,{isBrowser:A,toUrl:function(b){var d,f=b.lastIndexOf("."),g=b.split("/")[0];if(-1!==f&&(!("."===g||".."===g)||1<f))d=b.substring(f,b.length),b=
-        b.substring(0,f);return k.nameToUrl(c(b,a&&a.id,!0),d,!0)},defined:function(b){return t(r,l(b,a,!1,!0).id)},specified:function(b){b=l(b,a,!1,!0).id;return t(r,b)||t(q,b)}});a||(d.undef=function(b){x();var c=l(b,a,!0),d=m(q,b);delete r[b];delete V[c.url];delete aa[b];d&&(d.events.defined&&(aa[b]=d.events),y(b))});return d},enable:function(a){m(q,a.id)&&s(a).enable()},completeLoad:function(a){var b,c,e=m(j.shim,a)||{},d=e.exports;for(x();I.length;){c=I.shift();if(null===c[0]){c[0]=a;if(b)break;b=!0}else c[0]===
-        a&&(b=!0);F(c)}c=m(q,a);if(!b&&!t(r,a)&&c&&!c.inited){if(j.enforceDefine&&(!d||!da(d)))return p(a)?void 0:w(B("nodefine","No define call for "+a,null,[a]));F([a,e.deps||[],e.exportsFn])}E()},nameToUrl:function(a,b,c){var d,g,l,i,k,p;if(h.jsExtRegExp.test(a))i=a+(b||"");else{d=j.paths;g=j.pkgs;i=a.split("/");for(k=i.length;0<k;k-=1)if(p=i.slice(0,k).join("/"),l=m(g,p),p=m(d,p)){K(p)&&(p=p[0]);i.splice(0,k,p);break}else if(l){a=a===l.name?l.location+"/"+l.main:l.location;i.splice(0,k,a);break}i=i.join("/");
-        i+=b||(/\?/.test(i)||c?"":".js");i=("/"===i.charAt(0)||i.match(/^[\w\+\.\-]+:/)?"":j.baseUrl)+i}return j.urlArgs?i+((-1===i.indexOf("?")?"?":"&")+j.urlArgs):i},load:function(a,b){h.load(k,a,b)},execCb:function(a,b,c,d){return b.apply(d,c)},onScriptLoad:function(a){if("load"===a.type||la.test((a.currentTarget||a.srcElement).readyState))R=null,a=L(a),k.completeLoad(a.id)},onScriptError:function(a){var b=L(a);if(!p(b.id))return w(B("scripterror","Script error for: "+b.id,a,[b.id]))}};k.require=k.makeRequire();
-    return k}var h,x,y,E,L,F,R,M,s,ga,ma=/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg,na=/[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,fa=/\.js$/,ka=/^\.\//;x=Object.prototype;var N=x.toString,ha=x.hasOwnProperty,ja=Array.prototype.splice,A=!!("undefined"!==typeof window&&navigator&&window.document),ea=!A&&"undefined"!==typeof importScripts,la=A&&"PLAYSTATION 3"===navigator.platform?/^complete$/:/^(complete|loaded)$/,Z="undefined"!==typeof opera&&"[object Opera]"===opera.toString(),G={},u={},U=[],Q=
-    !1;if("undefined"===typeof define){if("undefined"!==typeof requirejs){if(J(requirejs))return;u=requirejs;requirejs=void 0}"undefined"!==typeof require&&!J(require)&&(u=require,require=void 0);h=requirejs=function(b,c,d,p){var g,l="_";!K(b)&&"string"!==typeof b&&(g=b,K(c)?(b=c,c=d,d=p):b=[]);g&&g.context&&(l=g.context);(p=m(G,l))||(p=G[l]=h.s.newContext(l));g&&p.configure(g);return p.require(b,c,d)};h.config=function(b){return h(b)};h.nextTick="undefined"!==typeof setTimeout?function(b){setTimeout(b,
-    4)}:function(b){b()};require||(require=h);h.version="2.1.6";h.jsExtRegExp=/^\/|:|\?|\.js$/;h.isBrowser=A;x=h.s={contexts:G,newContext:ia};h({});z(["toUrl","undef","defined","specified"],function(b){h[b]=function(){var c=G._;return c.require[b].apply(c,arguments)}});if(A&&(y=x.head=document.getElementsByTagName("head")[0],E=document.getElementsByTagName("base")[0]))y=x.head=E.parentNode;h.onError=ca;h.load=function(b,c,d){var h=b&&b.config||{},g;if(A)return g=h.xhtml?document.createElementNS("http://www.w3.org/1999/xhtml",
-    "html:script"):document.createElement("script"),g.type=h.scriptType||"text/javascript",g.charset="utf-8",g.async=!0,g.setAttribute("data-requirecontext",b.contextName),g.setAttribute("data-requiremodule",c),g.attachEvent&&!(g.attachEvent.toString&&0>g.attachEvent.toString().indexOf("[native code"))&&!Z?(Q=!0,g.attachEvent("onreadystatechange",b.onScriptLoad)):(g.addEventListener("load",b.onScriptLoad,!1),g.addEventListener("error",b.onScriptError,!1)),g.src=d,M=g,E?y.insertBefore(g,E):y.appendChild(g),
-    M=null,g;if(ea)try{importScripts(d),b.completeLoad(c)}catch(l){b.onError(B("importscripts","importScripts failed for "+c+" at "+d,l,[c]))}};A&&O(document.getElementsByTagName("script"),function(b){y||(y=b.parentNode);if(L=b.getAttribute("data-main"))return s=L,u.baseUrl||(F=s.split("/"),s=F.pop(),ga=F.length?F.join("/")+"/":"./",u.baseUrl=ga),s=s.replace(fa,""),h.jsExtRegExp.test(s)&&(s=L),u.deps=u.deps?u.deps.concat(s):[s],!0});define=function(b,c,d){var h,g;"string"!==typeof b&&(d=c,c=b,b=null);
-    K(c)||(d=c,c=null);!c&&J(d)&&(c=[],d.length&&(d.toString().replace(ma,"").replace(na,function(b,d){c.push(d)}),c=(1===d.length?["require"]:["require","exports","module"]).concat(c)));if(Q){if(!(h=M))R&&"interactive"===R.readyState||O(document.getElementsByTagName("script"),function(b){if("interactive"===b.readyState)return R=b}),h=R;h&&(b||(b=h.getAttribute("data-requiremodule")),g=G[h.getAttribute("data-requirecontext")])}(g?g.defQueue:U).push([b,c,d])};define.amd={jQuery:!0};h.exec=function(b){return eval(b)};
-    h(u)}})(this);}
+
+if (undefined === require) {
+
+/** vim: et:ts=4:sw=4:sts=4
+ * @license RequireJS 2.1.10 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
+ * Available via the MIT or new BSD license.
+ * see: http://github.com/jrburke/requirejs for details
+ */
+//Not using strict: uneven strict support in browsers, #392, and causes
+//problems with requirejs.exec()/transpiler plugins that may not be strict.
+/*jslint regexp: true, nomen: true, sloppy: true */
+/*global window, navigator, document, importScripts, setTimeout, opera */
+
+var requirejs, require, define;
+(function (global) {
+    var req, s, head, baseElement, dataMain, src,
+        interactiveScript, currentlyAddingScript, mainScript, subPath,
+        version = '2.1.10',
+        commentRegExp = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg,
+        cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
+        jsSuffixRegExp = /\.js$/,
+        currDirRegExp = /^\.\//,
+        op = Object.prototype,
+        ostring = op.toString,
+        hasOwn = op.hasOwnProperty,
+        ap = Array.prototype,
+        apsp = ap.splice,
+        isBrowser = !!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && window.document),
+        isWebWorker = !isBrowser && typeof importScripts !== 'undefined',
+        //PS3 indicates loaded and complete, but need to wait for complete
+        //specifically. Sequence is 'loading', 'loaded', execution,
+        // then 'complete'. The UA check is unfortunate, but not sure how
+        //to feature test w/o causing perf issues.
+        readyRegExp = isBrowser && navigator.platform === 'PLAYSTATION 3' ?
+                      /^complete$/ : /^(complete|loaded)$/,
+        defContextName = '_',
+        //Oh the tragedy, detecting opera. See the usage of isOpera for reason.
+        isOpera = typeof opera !== 'undefined' && opera.toString() === '[object Opera]',
+        contexts = {},
+        cfg = {},
+        globalDefQueue = [],
+        useInteractive = false;
+
+    function isFunction(it) {
+        return ostring.call(it) === '[object Function]';
+    }
+
+    function isArray(it) {
+        return ostring.call(it) === '[object Array]';
+    }
+
+    /**
+     * Helper function for iterating over an array. If the func returns
+     * a true value, it will break out of the loop.
+     */
+    function each(ary, func) {
+        if (ary) {
+            var i;
+            for (i = 0; i < ary.length; i += 1) {
+                if (ary[i] && func(ary[i], i, ary)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper function for iterating over an array backwards. If the func
+     * returns a true value, it will break out of the loop.
+     */
+    function eachReverse(ary, func) {
+        if (ary) {
+            var i;
+            for (i = ary.length - 1; i > -1; i -= 1) {
+                if (ary[i] && func(ary[i], i, ary)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    function hasProp(obj, prop) {
+        return hasOwn.call(obj, prop);
+    }
+
+    function getOwn(obj, prop) {
+        return hasProp(obj, prop) && obj[prop];
+    }
+
+    /**
+     * Cycles over properties in an object and calls a function for each
+     * property value. If the function returns a truthy value, then the
+     * iteration is stopped.
+     */
+    function eachProp(obj, func) {
+        var prop;
+        for (prop in obj) {
+            if (hasProp(obj, prop)) {
+                if (func(obj[prop], prop)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Simple function to mix in properties from source into target,
+     * but only if target does not already have a property of the same name.
+     */
+    function mixin(target, source, force, deepStringMixin) {
+        if (source) {
+            eachProp(source, function (value, prop) {
+                if (force || !hasProp(target, prop)) {
+                    if (deepStringMixin && typeof value === 'object' && value &&
+                        !isArray(value) && !isFunction(value) &&
+                        !(value instanceof RegExp)) {
+
+                        if (!target[prop]) {
+                            target[prop] = {};
+                        }
+                        mixin(target[prop], value, force, deepStringMixin);
+                    } else {
+                        target[prop] = value;
+                    }
+                }
+            });
+        }
+        return target;
+    }
+
+    //Similar to Function.prototype.bind, but the 'this' object is specified
+    //first, since it is easier to read/figure out what 'this' will be.
+    function bind(obj, fn) {
+        return function () {
+            return fn.apply(obj, arguments);
+        };
+    }
+
+    function scripts() {
+        return document.getElementsByTagName('script');
+    }
+
+    function defaultOnError(err) {
+        throw err;
+    }
+
+    //Allow getting a global that expressed in
+    //dot notation, like 'a.b.c'.
+    function getGlobal(value) {
+        if (!value) {
+            return value;
+        }
+        var g = global;
+        each(value.split('.'), function (part) {
+            g = g[part];
+        });
+        return g;
+    }
+
+    /**
+     * Constructs an error with a pointer to an URL with more information.
+     * @param {String} id the error ID that maps to an ID on a web page.
+     * @param {String} message human readable error.
+     * @param {Error} [err] the original error, if there is one.
+     *
+     * @returns {Error}
+     */
+    function makeError(id, msg, err, requireModules) {
+        var e = new Error(msg + '\nhttp://requirejs.org/docs/errors.html#' + id);
+        e.requireType = id;
+        e.requireModules = requireModules;
+        if (err) {
+            e.originalError = err;
+        }
+        return e;
+    }
+
+    if (typeof define !== 'undefined') {
+        //If a define is already in play via another AMD loader,
+        //do not overwrite.
+        return;
+    }
+
+    if (typeof requirejs !== 'undefined') {
+        if (isFunction(requirejs)) {
+            //Do not overwrite and existing requirejs instance.
+            return;
+        }
+        cfg = requirejs;
+        requirejs = undefined;
+    }
+
+    //Allow for a require config object
+    if (typeof require !== 'undefined' && !isFunction(require)) {
+        //assume it is a config object.
+        cfg = require;
+        require = undefined;
+    }
+
+    function newContext(contextName) {
+        var inCheckLoaded, Module, context, handlers,
+            checkLoadedTimeoutId,
+            config = {
+                //Defaults. Do not set a default for map
+                //config to speed up normalize(), which
+                //will run faster if there is no default.
+                waitSeconds: 7,
+                baseUrl: './',
+                paths: {},
+                bundles: {},
+                pkgs: {},
+                shim: {},
+                config: {}
+            },
+            registry = {},
+            //registry of just enabled modules, to speed
+            //cycle breaking code when lots of modules
+            //are registered, but not activated.
+            enabledRegistry = {},
+            undefEvents = {},
+            defQueue = [],
+            defined = {},
+            urlFetched = {},
+            bundlesMap = {},
+            requireCounter = 1,
+            unnormalizedCounter = 1;
+
+        /**
+         * Trims the . and .. from an array of path segments.
+         * It will keep a leading path segment if a .. will become
+         * the first path segment, to help with module name lookups,
+         * which act like paths, but can be remapped. But the end result,
+         * all paths that use this function should look normalized.
+         * NOTE: this method MODIFIES the input array.
+         * @param {Array} ary the array of path segments.
+         */
+        function trimDots(ary) {
+            var i, part, length = ary.length;
+            for (i = 0; i < length; i++) {
+                part = ary[i];
+                if (part === '.') {
+                    ary.splice(i, 1);
+                    i -= 1;
+                } else if (part === '..') {
+                    if (i === 1 && (ary[2] === '..' || ary[0] === '..')) {
+                        //End of the line. Keep at least one non-dot
+                        //path segment at the front so it can be mapped
+                        //correctly to disk. Otherwise, there is likely
+                        //no path mapping for a path starting with '..'.
+                        //This can still fail, but catches the most reasonable
+                        //uses of ..
+                        break;
+                    } else if (i > 0) {
+                        ary.splice(i - 1, 2);
+                        i -= 2;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Given a relative module name, like ./something, normalize it to
+         * a real name that can be mapped to a path.
+         * @param {String} name the relative name
+         * @param {String} baseName a real name that the name arg is relative
+         * to.
+         * @param {Boolean} applyMap apply the map config to the value. Should
+         * only be done if this normalization is for a dependency ID.
+         * @returns {String} normalized name
+         */
+        function normalize(name, baseName, applyMap) {
+            var pkgMain, mapValue, nameParts, i, j, nameSegment, lastIndex,
+                foundMap, foundI, foundStarMap, starI,
+                baseParts = baseName && baseName.split('/'),
+                normalizedBaseParts = baseParts,
+                map = config.map,
+                starMap = map && map['*'];
+
+            //Adjust any relative paths.
+            if (name && name.charAt(0) === '.') {
+                //If have a base name, try to normalize against it,
+                //otherwise, assume it is a top-level require that will
+                //be relative to baseUrl in the end.
+                if (baseName) {
+                    //Convert baseName to array, and lop off the last part,
+                    //so that . matches that 'directory' and not name of the baseName's
+                    //module. For instance, baseName of 'one/two/three', maps to
+                    //'one/two/three.js', but we want the directory, 'one/two' for
+                    //this normalization.
+                    normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
+                    name = name.split('/');
+                    lastIndex = name.length - 1;
+
+                    // If wanting node ID compatibility, strip .js from end
+                    // of IDs. Have to do this here, and not in nameToUrl
+                    // because node allows either .js or non .js to map
+                    // to same file.
+                    if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                        name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                    }
+
+                    name = normalizedBaseParts.concat(name);
+                    trimDots(name);
+                    name = name.join('/');
+                } else if (name.indexOf('./') === 0) {
+                    // No baseName, so this is ID is resolved relative
+                    // to baseUrl, pull off the leading dot.
+                    name = name.substring(2);
+                }
+            }
+
+            //Apply map config if available.
+            if (applyMap && map && (baseParts || starMap)) {
+                nameParts = name.split('/');
+
+                outerLoop: for (i = nameParts.length; i > 0; i -= 1) {
+                    nameSegment = nameParts.slice(0, i).join('/');
+
+                    if (baseParts) {
+                        //Find the longest baseName segment match in the config.
+                        //So, do joins on the biggest to smallest lengths of baseParts.
+                        for (j = baseParts.length; j > 0; j -= 1) {
+                            mapValue = getOwn(map, baseParts.slice(0, j).join('/'));
+
+                            //baseName segment has config, find if it has one for
+                            //this name.
+                            if (mapValue) {
+                                mapValue = getOwn(mapValue, nameSegment);
+                                if (mapValue) {
+                                    //Match, update name to the new value.
+                                    foundMap = mapValue;
+                                    foundI = i;
+                                    break outerLoop;
+                                }
+                            }
+                        }
+                    }
+
+                    //Check for a star map match, but just hold on to it,
+                    //if there is a shorter segment match later in a matching
+                    //config, then favor over this star map.
+                    if (!foundStarMap && starMap && getOwn(starMap, nameSegment)) {
+                        foundStarMap = getOwn(starMap, nameSegment);
+                        starI = i;
+                    }
+                }
+
+                if (!foundMap && foundStarMap) {
+                    foundMap = foundStarMap;
+                    foundI = starI;
+                }
+
+                if (foundMap) {
+                    nameParts.splice(0, foundI, foundMap);
+                    name = nameParts.join('/');
+                }
+            }
+
+            // If the name points to a package's name, use
+            // the package main instead.
+            pkgMain = getOwn(config.pkgs, name);
+
+            return pkgMain ? pkgMain : name;
+        }
+
+        function removeScript(name) {
+            if (isBrowser) {
+                each(scripts(), function (scriptNode) {
+                    if (scriptNode.getAttribute('data-requiremodule') === name &&
+                            scriptNode.getAttribute('data-requirecontext') === context.contextName) {
+                        scriptNode.parentNode.removeChild(scriptNode);
+                        return true;
+                    }
+                });
+            }
+        }
+
+        function hasPathFallback(id) {
+            var pathConfig = getOwn(config.paths, id);
+            if (pathConfig && isArray(pathConfig) && pathConfig.length > 1) {
+                //Pop off the first array value, since it failed, and
+                //retry
+                pathConfig.shift();
+                context.require.undef(id);
+                context.require([id]);
+                return true;
+            }
+        }
+
+        //Turns a plugin!resource to [plugin, resource]
+        //with the plugin being undefined if the name
+        //did not have a plugin prefix.
+        function splitPrefix(name) {
+            var prefix,
+                index = name ? name.indexOf('!') : -1;
+            if (index > -1) {
+                prefix = name.substring(0, index);
+                name = name.substring(index + 1, name.length);
+            }
+            return [prefix, name];
+        }
+
+        /**
+         * Creates a module mapping that includes plugin prefix, module
+         * name, and path. If parentModuleMap is provided it will
+         * also normalize the name via require.normalize()
+         *
+         * @param {String} name the module name
+         * @param {String} [parentModuleMap] parent module map
+         * for the module name, used to resolve relative names.
+         * @param {Boolean} isNormalized: is the ID already normalized.
+         * This is true if this call is done for a define() module ID.
+         * @param {Boolean} applyMap: apply the map config to the ID.
+         * Should only be true if this map is for a dependency.
+         *
+         * @returns {Object}
+         */
+        function makeModuleMap(name, parentModuleMap, isNormalized, applyMap) {
+            var url, pluginModule, suffix, nameParts,
+                prefix = null,
+                parentName = parentModuleMap ? parentModuleMap.name : null,
+                originalName = name,
+                isDefine = true,
+                normalizedName = '';
+
+            //If no name, then it means it is a require call, generate an
+            //internal name.
+            if (!name) {
+                isDefine = false;
+                name = '_@r' + (requireCounter += 1);
+            }
+
+            nameParts = splitPrefix(name);
+            prefix = nameParts[0];
+            name = nameParts[1];
+
+            if (prefix) {
+                prefix = normalize(prefix, parentName, applyMap);
+                pluginModule = getOwn(defined, prefix);
+            }
+
+            //Account for relative paths if there is a base name.
+            if (name) {
+                if (prefix) {
+                    if (pluginModule && pluginModule.normalize) {
+                        //Plugin is loaded, use its normalize method.
+                        normalizedName = pluginModule.normalize(name, function (name) {
+                            return normalize(name, parentName, applyMap);
+                        });
+                    } else {
+                        normalizedName = normalize(name, parentName, applyMap);
+                    }
+                } else {
+                    //A regular module.
+                    normalizedName = normalize(name, parentName, applyMap);
+
+                    //Normalized name may be a plugin ID due to map config
+                    //application in normalize. The map config values must
+                    //already be normalized, so do not need to redo that part.
+                    nameParts = splitPrefix(normalizedName);
+                    prefix = nameParts[0];
+                    normalizedName = nameParts[1];
+                    isNormalized = true;
+
+                    url = context.nameToUrl(normalizedName);
+                }
+            }
+
+            //If the id is a plugin id that cannot be determined if it needs
+            //normalization, stamp it with a unique ID so two matching relative
+            //ids that may conflict can be separate.
+            suffix = prefix && !pluginModule && !isNormalized ?
+                     '_unnormalized' + (unnormalizedCounter += 1) :
+                     '';
+
+            return {
+                prefix: prefix,
+                name: normalizedName,
+                parentMap: parentModuleMap,
+                unnormalized: !!suffix,
+                url: url,
+                originalName: originalName,
+                isDefine: isDefine,
+                id: (prefix ?
+                        prefix + '!' + normalizedName :
+                        normalizedName) + suffix
+            };
+        }
+
+        function getModule(depMap) {
+            var id = depMap.id,
+                mod = getOwn(registry, id);
+
+            if (!mod) {
+                mod = registry[id] = new context.Module(depMap);
+            }
+
+            return mod;
+        }
+
+        function on(depMap, name, fn) {
+            var id = depMap.id,
+                mod = getOwn(registry, id);
+
+            if (hasProp(defined, id) &&
+                    (!mod || mod.defineEmitComplete)) {
+                if (name === 'defined') {
+                    fn(defined[id]);
+                }
+            } else {
+                mod = getModule(depMap);
+                if (mod.error && name === 'error') {
+                    fn(mod.error);
+                } else {
+                    mod.on(name, fn);
+                }
+            }
+        }
+
+        function onError(err, errback) {
+            var ids = err.requireModules,
+                notified = false;
+
+            if (errback) {
+                errback(err);
+            } else {
+                each(ids, function (id) {
+                    var mod = getOwn(registry, id);
+                    if (mod) {
+                        //Set error on module, so it skips timeout checks.
+                        mod.error = err;
+                        if (mod.events.error) {
+                            notified = true;
+                            mod.emit('error', err);
+                        }
+                    }
+                });
+
+                if (!notified) {
+                    req.onError(err);
+                }
+            }
+        }
+
+        /**
+         * Internal method to transfer globalQueue items to this context's
+         * defQueue.
+         */
+        function takeGlobalQueue() {
+            //Push all the globalDefQueue items into the context's defQueue
+            if (globalDefQueue.length) {
+                //Array splice in the values since the context code has a
+                //local var ref to defQueue, so cannot just reassign the one
+                //on context.
+                apsp.apply(defQueue,
+                           [defQueue.length, 0].concat(globalDefQueue));
+                globalDefQueue = [];
+            }
+        }
+
+        handlers = {
+            'require': function (mod) {
+                if (mod.require) {
+                    return mod.require;
+                } else {
+                    return (mod.require = context.makeRequire(mod.map));
+                }
+            },
+            'exports': function (mod) {
+                mod.usingExports = true;
+                if (mod.map.isDefine) {
+                    if (mod.exports) {
+                        return mod.exports;
+                    } else {
+                        return (mod.exports = defined[mod.map.id] = {});
+                    }
+                }
+            },
+            'module': function (mod) {
+                if (mod.module) {
+                    return mod.module;
+                } else {
+                    return (mod.module = {
+                        id: mod.map.id,
+                        uri: mod.map.url,
+                        config: function () {
+                            return  getOwn(config.config, mod.map.id) || {};
+                        },
+                        exports: handlers.exports(mod)
+                    });
+                }
+            }
+        };
+
+        function cleanRegistry(id) {
+            //Clean up machinery used for waiting modules.
+            delete registry[id];
+            delete enabledRegistry[id];
+        }
+
+        function breakCycle(mod, traced, processed) {
+            var id = mod.map.id;
+
+            if (mod.error) {
+                mod.emit('error', mod.error);
+            } else {
+                traced[id] = true;
+                each(mod.depMaps, function (depMap, i) {
+                    var depId = depMap.id,
+                        dep = getOwn(registry, depId);
+
+                    //Only force things that have not completed
+                    //being defined, so still in the registry,
+                    //and only if it has not been matched up
+                    //in the module already.
+                    if (dep && !mod.depMatched[i] && !processed[depId]) {
+                        if (getOwn(traced, depId)) {
+                            mod.defineDep(i, defined[depId]);
+                            mod.check(); //pass false?
+                        } else {
+                            breakCycle(dep, traced, processed);
+                        }
+                    }
+                });
+                processed[id] = true;
+            }
+        }
+
+        function checkLoaded() {
+            var err, usingPathFallback,
+                waitInterval = config.waitSeconds * 1000,
+                //It is possible to disable the wait interval by using waitSeconds of 0.
+                expired = waitInterval && (context.startTime + waitInterval) < new Date().getTime(),
+                noLoads = [],
+                reqCalls = [],
+                stillLoading = false,
+                needCycleCheck = true;
+
+            //Do not bother if this call was a result of a cycle break.
+            if (inCheckLoaded) {
+                return;
+            }
+
+            inCheckLoaded = true;
+
+            //Figure out the state of all the modules.
+            eachProp(enabledRegistry, function (mod) {
+                var map = mod.map,
+                    modId = map.id;
+
+                //Skip things that are not enabled or in error state.
+                if (!mod.enabled) {
+                    return;
+                }
+
+                if (!map.isDefine) {
+                    reqCalls.push(mod);
+                }
+
+                if (!mod.error) {
+                    //If the module should be executed, and it has not
+                    //been inited and time is up, remember it.
+                    if (!mod.inited && expired) {
+                        if (hasPathFallback(modId)) {
+                            usingPathFallback = true;
+                            stillLoading = true;
+                        } else {
+                            noLoads.push(modId);
+                            removeScript(modId);
+                        }
+                    } else if (!mod.inited && mod.fetched && map.isDefine) {
+                        stillLoading = true;
+                        if (!map.prefix) {
+                            //No reason to keep looking for unfinished
+                            //loading. If the only stillLoading is a
+                            //plugin resource though, keep going,
+                            //because it may be that a plugin resource
+                            //is waiting on a non-plugin cycle.
+                            return (needCycleCheck = false);
+                        }
+                    }
+                }
+            });
+
+            if (expired && noLoads.length) {
+                //If wait time expired, throw error of unloaded modules.
+                err = makeError('timeout', 'Load timeout for modules: ' + noLoads, null, noLoads);
+                err.contextName = context.contextName;
+                return onError(err);
+            }
+
+            //Not expired, check for a cycle.
+            if (needCycleCheck) {
+                each(reqCalls, function (mod) {
+                    breakCycle(mod, {}, {});
+                });
+            }
+
+            //If still waiting on loads, and the waiting load is something
+            //other than a plugin resource, or there are still outstanding
+            //scripts, then just try back later.
+            if ((!expired || usingPathFallback) && stillLoading) {
+                //Something is still waiting to load. Wait for it, but only
+                //if a timeout is not already in effect.
+                if ((isBrowser || isWebWorker) && !checkLoadedTimeoutId) {
+                    checkLoadedTimeoutId = setTimeout(function () {
+                        checkLoadedTimeoutId = 0;
+                        checkLoaded();
+                    }, 50);
+                }
+            }
+
+            inCheckLoaded = false;
+        }
+
+        Module = function (map) {
+            this.events = getOwn(undefEvents, map.id) || {};
+            this.map = map;
+            this.shim = getOwn(config.shim, map.id);
+            this.depExports = [];
+            this.depMaps = [];
+            this.depMatched = [];
+            this.pluginMaps = {};
+            this.depCount = 0;
+
+            /* this.exports this.factory
+               this.depMaps = [],
+               this.enabled, this.fetched
+            */
+        };
+
+        Module.prototype = {
+            init: function (depMaps, factory, errback, options) {
+                options = options || {};
+
+                //Do not do more inits if already done. Can happen if there
+                //are multiple define calls for the same module. That is not
+                //a normal, common case, but it is also not unexpected.
+                if (this.inited) {
+                    return;
+                }
+
+                this.factory = factory;
+
+                if (errback) {
+                    //Register for errors on this module.
+                    this.on('error', errback);
+                } else if (this.events.error) {
+                    //If no errback already, but there are error listeners
+                    //on this module, set up an errback to pass to the deps.
+                    errback = bind(this, function (err) {
+                        this.emit('error', err);
+                    });
+                }
+
+                //Do a copy of the dependency array, so that
+                //source inputs are not modified. For example
+                //"shim" deps are passed in here directly, and
+                //doing a direct modification of the depMaps array
+                //would affect that config.
+                this.depMaps = depMaps && depMaps.slice(0);
+
+                this.errback = errback;
+
+                //Indicate this module has be initialized
+                this.inited = true;
+
+                this.ignore = options.ignore;
+
+                //Could have option to init this module in enabled mode,
+                //or could have been previously marked as enabled. However,
+                //the dependencies are not known until init is called. So
+                //if enabled previously, now trigger dependencies as enabled.
+                if (options.enabled || this.enabled) {
+                    //Enable this module and dependencies.
+                    //Will call this.check()
+                    this.enable();
+                } else {
+                    this.check();
+                }
+            },
+
+            defineDep: function (i, depExports) {
+                //Because of cycles, defined callback for a given
+                //export can be called more than once.
+                if (!this.depMatched[i]) {
+                    this.depMatched[i] = true;
+                    this.depCount -= 1;
+                    this.depExports[i] = depExports;
+                }
+            },
+
+            fetch: function () {
+                if (this.fetched) {
+                    return;
+                }
+                this.fetched = true;
+
+                context.startTime = (new Date()).getTime();
+
+                var map = this.map;
+
+                //If the manager is for a plugin managed resource,
+                //ask the plugin to load it now.
+                if (this.shim) {
+                    context.makeRequire(this.map, {
+                        enableBuildCallback: true
+                    })(this.shim.deps || [], bind(this, function () {
+                        return map.prefix ? this.callPlugin() : this.load();
+                    }));
+                } else {
+                    //Regular dependency.
+                    return map.prefix ? this.callPlugin() : this.load();
+                }
+            },
+
+            load: function () {
+                var url = this.map.url;
+
+                //Regular dependency.
+                if (!urlFetched[url]) {
+                    urlFetched[url] = true;
+                    context.load(this.map.id, url);
+                }
+            },
+
+            /**
+             * Checks if the module is ready to define itself, and if so,
+             * define it.
+             */
+            check: function () {
+                if (!this.enabled || this.enabling) {
+                    return;
+                }
+
+                var err, cjsModule,
+                    id = this.map.id,
+                    depExports = this.depExports,
+                    exports = this.exports,
+                    factory = this.factory;
+
+                if (!this.inited) {
+                    this.fetch();
+                } else if (this.error) {
+                    this.emit('error', this.error);
+                } else if (!this.defining) {
+                    //The factory could trigger another require call
+                    //that would result in checking this module to
+                    //define itself again. If already in the process
+                    //of doing that, skip this work.
+                    this.defining = true;
+
+                    if (this.depCount < 1 && !this.defined) {
+                        if (isFunction(factory)) {
+                            //If there is an error listener, favor passing
+                            //to that instead of throwing an error. However,
+                            //only do it for define()'d  modules. require
+                            //errbacks should not be called for failures in
+                            //their callbacks (#699). However if a global
+                            //onError is set, use that.
+                            if ((this.events.error && this.map.isDefine) ||
+                                req.onError !== defaultOnError) {
+                                try {
+                                    exports = context.execCb(id, factory, depExports, exports);
+                                } catch (e) {
+                                    err = e;
+                                }
+                            } else {
+                                exports = context.execCb(id, factory, depExports, exports);
+                            }
+
+                            // Favor return value over exports. If node/cjs in play,
+                            // then will not have a return value anyway. Favor
+                            // module.exports assignment over exports object.
+                            if (this.map.isDefine && exports === undefined) {
+                                cjsModule = this.module;
+                                if (cjsModule) {
+                                    exports = cjsModule.exports;
+                                } else if (this.usingExports) {
+                                    //exports already set the defined value.
+                                    exports = this.exports;
+                                }
+                            }
+
+                            if (err) {
+                                err.requireMap = this.map;
+                                err.requireModules = this.map.isDefine ? [this.map.id] : null;
+                                err.requireType = this.map.isDefine ? 'define' : 'require';
+                                return onError((this.error = err));
+                            }
+
+                        } else {
+                            //Just a literal value
+                            exports = factory;
+                        }
+
+                        this.exports = exports;
+
+                        if (this.map.isDefine && !this.ignore) {
+                            defined[id] = exports;
+
+                            if (req.onResourceLoad) {
+                                req.onResourceLoad(context, this.map, this.depMaps);
+                            }
+                        }
+
+                        //Clean up
+                        cleanRegistry(id);
+
+                        this.defined = true;
+                    }
+
+                    //Finished the define stage. Allow calling check again
+                    //to allow define notifications below in the case of a
+                    //cycle.
+                    this.defining = false;
+
+                    if (this.defined && !this.defineEmitted) {
+                        this.defineEmitted = true;
+                        this.emit('defined', this.exports);
+                        this.defineEmitComplete = true;
+                    }
+
+                }
+            },
+
+            callPlugin: function () {
+                var map = this.map,
+                    id = map.id,
+                    //Map already normalized the prefix.
+                    pluginMap = makeModuleMap(map.prefix);
+
+                //Mark this as a dependency for this plugin, so it
+                //can be traced for cycles.
+                this.depMaps.push(pluginMap);
+
+                on(pluginMap, 'defined', bind(this, function (plugin) {
+                    var load, normalizedMap, normalizedMod,
+                        bundleId = getOwn(bundlesMap, this.map.id),
+                        name = this.map.name,
+                        parentName = this.map.parentMap ? this.map.parentMap.name : null,
+                        localRequire = context.makeRequire(map.parentMap, {
+                            enableBuildCallback: true
+                        });
+
+                    //If current map is not normalized, wait for that
+                    //normalized name to load instead of continuing.
+                    if (this.map.unnormalized) {
+                        //Normalize the ID if the plugin allows it.
+                        if (plugin.normalize) {
+                            name = plugin.normalize(name, function (name) {
+                                return normalize(name, parentName, true);
+                            }) || '';
+                        }
+
+                        //prefix and name should already be normalized, no need
+                        //for applying map config again either.
+                        normalizedMap = makeModuleMap(map.prefix + '!' + name,
+                                                      this.map.parentMap);
+                        on(normalizedMap,
+                            'defined', bind(this, function (value) {
+                                this.init([], function () { return value; }, null, {
+                                    enabled: true,
+                                    ignore: true
+                                });
+                            }));
+
+                        normalizedMod = getOwn(registry, normalizedMap.id);
+                        if (normalizedMod) {
+                            //Mark this as a dependency for this plugin, so it
+                            //can be traced for cycles.
+                            this.depMaps.push(normalizedMap);
+
+                            if (this.events.error) {
+                                normalizedMod.on('error', bind(this, function (err) {
+                                    this.emit('error', err);
+                                }));
+                            }
+                            normalizedMod.enable();
+                        }
+
+                        return;
+                    }
+
+                    //If a paths config, then just load that file instead to
+                    //resolve the plugin, as it is built into that paths layer.
+                    if (bundleId) {
+                        this.map.url = context.nameToUrl(bundleId);
+                        this.load();
+                        return;
+                    }
+
+                    load = bind(this, function (value) {
+                        this.init([], function () { return value; }, null, {
+                            enabled: true
+                        });
+                    });
+
+                    load.error = bind(this, function (err) {
+                        this.inited = true;
+                        this.error = err;
+                        err.requireModules = [id];
+
+                        //Remove temp unnormalized modules for this module,
+                        //since they will never be resolved otherwise now.
+                        eachProp(registry, function (mod) {
+                            if (mod.map.id.indexOf(id + '_unnormalized') === 0) {
+                                cleanRegistry(mod.map.id);
+                            }
+                        });
+
+                        onError(err);
+                    });
+
+                    //Allow plugins to load other code without having to know the
+                    //context or how to 'complete' the load.
+                    load.fromText = bind(this, function (text, textAlt) {
+                        /*jslint evil: true */
+                        var moduleName = map.name,
+                            moduleMap = makeModuleMap(moduleName),
+                            hasInteractive = useInteractive;
+
+                        //As of 2.1.0, support just passing the text, to reinforce
+                        //fromText only being called once per resource. Still
+                        //support old style of passing moduleName but discard
+                        //that moduleName in favor of the internal ref.
+                        if (textAlt) {
+                            text = textAlt;
+                        }
+
+                        //Turn off interactive script matching for IE for any define
+                        //calls in the text, then turn it back on at the end.
+                        if (hasInteractive) {
+                            useInteractive = false;
+                        }
+
+                        //Prime the system by creating a module instance for
+                        //it.
+                        getModule(moduleMap);
+
+                        //Transfer any config to this other module.
+                        if (hasProp(config.config, id)) {
+                            config.config[moduleName] = config.config[id];
+                        }
+
+                        try {
+                            req.exec(text);
+                        } catch (e) {
+                            return onError(makeError('fromtexteval',
+                                             'fromText eval for ' + id +
+                                            ' failed: ' + e,
+                                             e,
+                                             [id]));
+                        }
+
+                        if (hasInteractive) {
+                            useInteractive = true;
+                        }
+
+                        //Mark this as a dependency for the plugin
+                        //resource
+                        this.depMaps.push(moduleMap);
+
+                        //Support anonymous modules.
+                        context.completeLoad(moduleName);
+
+                        //Bind the value of that module to the value for this
+                        //resource ID.
+                        localRequire([moduleName], load);
+                    });
+
+                    //Use parentName here since the plugin's name is not reliable,
+                    //could be some weird string with no path that actually wants to
+                    //reference the parentName's path.
+                    plugin.load(map.name, localRequire, load, config);
+                }));
+
+                context.enable(pluginMap, this);
+                this.pluginMaps[pluginMap.id] = pluginMap;
+            },
+
+            enable: function () {
+                enabledRegistry[this.map.id] = this;
+                this.enabled = true;
+
+                //Set flag mentioning that the module is enabling,
+                //so that immediate calls to the defined callbacks
+                //for dependencies do not trigger inadvertent load
+                //with the depCount still being zero.
+                this.enabling = true;
+
+                //Enable each dependency
+                each(this.depMaps, bind(this, function (depMap, i) {
+                    var id, mod, handler;
+
+                    if (typeof depMap === 'string') {
+                        //Dependency needs to be converted to a depMap
+                        //and wired up to this module.
+                        depMap = makeModuleMap(depMap,
+                                               (this.map.isDefine ? this.map : this.map.parentMap),
+                                               false,
+                                               !this.skipMap);
+                        this.depMaps[i] = depMap;
+
+                        handler = getOwn(handlers, depMap.id);
+
+                        if (handler) {
+                            this.depExports[i] = handler(this);
+                            return;
+                        }
+
+                        this.depCount += 1;
+
+                        on(depMap, 'defined', bind(this, function (depExports) {
+                            this.defineDep(i, depExports);
+                            this.check();
+                        }));
+
+                        if (this.errback) {
+                            on(depMap, 'error', bind(this, this.errback));
+                        }
+                    }
+
+                    id = depMap.id;
+                    mod = registry[id];
+
+                    //Skip special modules like 'require', 'exports', 'module'
+                    //Also, don't call enable if it is already enabled,
+                    //important in circular dependency cases.
+                    if (!hasProp(handlers, id) && mod && !mod.enabled) {
+                        context.enable(depMap, this);
+                    }
+                }));
+
+                //Enable each plugin that is used in
+                //a dependency
+                eachProp(this.pluginMaps, bind(this, function (pluginMap) {
+                    var mod = getOwn(registry, pluginMap.id);
+                    if (mod && !mod.enabled) {
+                        context.enable(pluginMap, this);
+                    }
+                }));
+
+                this.enabling = false;
+
+                this.check();
+            },
+
+            on: function (name, cb) {
+                var cbs = this.events[name];
+                if (!cbs) {
+                    cbs = this.events[name] = [];
+                }
+                cbs.push(cb);
+            },
+
+            emit: function (name, evt) {
+                each(this.events[name], function (cb) {
+                    cb(evt);
+                });
+                if (name === 'error') {
+                    //Now that the error handler was triggered, remove
+                    //the listeners, since this broken Module instance
+                    //can stay around for a while in the registry.
+                    delete this.events[name];
+                }
+            }
+        };
+
+        function callGetModule(args) {
+            //Skip modules already defined.
+            if (!hasProp(defined, args[0])) {
+                getModule(makeModuleMap(args[0], null, true)).init(args[1], args[2]);
+            }
+        }
+
+        function removeListener(node, func, name, ieName) {
+            //Favor detachEvent because of IE9
+            //issue, see attachEvent/addEventListener comment elsewhere
+            //in this file.
+            if (node.detachEvent && !isOpera) {
+                //Probably IE. If not it will throw an error, which will be
+                //useful to know.
+                if (ieName) {
+                    node.detachEvent(ieName, func);
+                }
+            } else {
+                node.removeEventListener(name, func, false);
+            }
+        }
+
+        /**
+         * Given an event from a script node, get the requirejs info from it,
+         * and then removes the event listeners on the node.
+         * @param {Event} evt
+         * @returns {Object}
+         */
+        function getScriptData(evt) {
+            //Using currentTarget instead of target for Firefox 2.0's sake. Not
+            //all old browsers will be supported, but this one was easy enough
+            //to support and still makes sense.
+            var node = evt.currentTarget || evt.srcElement;
+
+            //Remove the listeners once here.
+            removeListener(node, context.onScriptLoad, 'load', 'onreadystatechange');
+            removeListener(node, context.onScriptError, 'error');
+
+            return {
+                node: node,
+                id: node && node.getAttribute('data-requiremodule')
+            };
+        }
+
+        function intakeDefines() {
+            var args;
+
+            //Any defined modules in the global queue, intake them now.
+            takeGlobalQueue();
+
+            //Make sure any remaining defQueue items get properly processed.
+            while (defQueue.length) {
+                args = defQueue.shift();
+                if (args[0] === null) {
+                    return onError(makeError('mismatch', 'Mismatched anonymous define() module: ' + args[args.length - 1]));
+                } else {
+                    //args are id, deps, factory. Should be normalized by the
+                    //define() function.
+                    callGetModule(args);
+                }
+            }
+        }
+
+        context = {
+            config: config,
+            contextName: contextName,
+            registry: registry,
+            defined: defined,
+            urlFetched: urlFetched,
+            defQueue: defQueue,
+            Module: Module,
+            makeModuleMap: makeModuleMap,
+            nextTick: req.nextTick,
+            onError: onError,
+
+            /**
+             * Set a configuration for the context.
+             * @param {Object} cfg config object to integrate.
+             */
+            configure: function (cfg) {
+                //Make sure the baseUrl ends in a slash.
+                if (cfg.baseUrl) {
+                    if (cfg.baseUrl.charAt(cfg.baseUrl.length - 1) !== '/') {
+                        cfg.baseUrl += '/';
+                    }
+                }
+
+                //Save off the paths since they require special processing,
+                //they are additive.
+                var shim = config.shim,
+                    objs = {
+                        paths: true,
+                        bundles: true,
+                        config: true,
+                        map: true
+                    };
+
+                eachProp(cfg, function (value, prop) {
+                    if (objs[prop]) {
+                        if (!config[prop]) {
+                            config[prop] = {};
+                        }
+                        mixin(config[prop], value, true, true);
+                    } else {
+                        config[prop] = value;
+                    }
+                });
+
+                //Reverse map the bundles
+                if (cfg.bundles) {
+                    eachProp(cfg.bundles, function (value, prop) {
+                        each(value, function (v) {
+                            if (v !== prop) {
+                                bundlesMap[v] = prop;
+                            }
+                        });
+                    });
+                }
+
+                //Merge shim
+                if (cfg.shim) {
+                    eachProp(cfg.shim, function (value, id) {
+                        //Normalize the structure
+                        if (isArray(value)) {
+                            value = {
+                                deps: value
+                            };
+                        }
+                        if ((value.exports || value.init) && !value.exportsFn) {
+                            value.exportsFn = context.makeShimExports(value);
+                        }
+                        shim[id] = value;
+                    });
+                    config.shim = shim;
+                }
+
+                //Adjust packages if necessary.
+                if (cfg.packages) {
+                    each(cfg.packages, function (pkgObj) {
+                        var location, name;
+
+                        pkgObj = typeof pkgObj === 'string' ? { name: pkgObj } : pkgObj;
+
+                        name = pkgObj.name;
+                        location = pkgObj.location;
+                        if (location) {
+                            config.paths[name] = pkgObj.location;
+                        }
+
+                        //Save pointer to main module ID for pkg name.
+                        //Remove leading dot in main, so main paths are normalized,
+                        //and remove any trailing .js, since different package
+                        //envs have different conventions: some use a module name,
+                        //some use a file name.
+                        config.pkgs[name] = pkgObj.name + '/' + (pkgObj.main || 'main')
+                                     .replace(currDirRegExp, '')
+                                     .replace(jsSuffixRegExp, '');
+                    });
+                }
+
+                //If there are any "waiting to execute" modules in the registry,
+                //update the maps for them, since their info, like URLs to load,
+                //may have changed.
+                eachProp(registry, function (mod, id) {
+                    //If module already has init called, since it is too
+                    //late to modify them, and ignore unnormalized ones
+                    //since they are transient.
+                    if (!mod.inited && !mod.map.unnormalized) {
+                        mod.map = makeModuleMap(id);
+                    }
+                });
+
+                //If a deps array or a config callback is specified, then call
+                //require with those args. This is useful when require is defined as a
+                //config object before require.js is loaded.
+                if (cfg.deps || cfg.callback) {
+                    context.require(cfg.deps || [], cfg.callback);
+                }
+            },
+
+            makeShimExports: function (value) {
+                function fn() {
+                    var ret;
+                    if (value.init) {
+                        ret = value.init.apply(global, arguments);
+                    }
+                    return ret || (value.exports && getGlobal(value.exports));
+                }
+                return fn;
+            },
+
+            makeRequire: function (relMap, options) {
+                options = options || {};
+
+                function localRequire(deps, callback, errback) {
+                    var id, map, requireMod;
+
+                    if (options.enableBuildCallback && callback && isFunction(callback)) {
+                        callback.__requireJsBuild = true;
+                    }
+
+                    if (typeof deps === 'string') {
+                        if (isFunction(callback)) {
+                            //Invalid call
+                            return onError(makeError('requireargs', 'Invalid require call'), errback);
+                        }
+
+                        //If require|exports|module are requested, get the
+                        //value for them from the special handlers. Caveat:
+                        //this only works while module is being defined.
+                        if (relMap && hasProp(handlers, deps)) {
+                            return handlers[deps](registry[relMap.id]);
+                        }
+
+                        //Synchronous access to one module. If require.get is
+                        //available (as in the Node adapter), prefer that.
+                        if (req.get) {
+                            return req.get(context, deps, relMap, localRequire);
+                        }
+
+                        //Normalize module name, if it contains . or ..
+                        map = makeModuleMap(deps, relMap, false, true);
+                        id = map.id;
+
+                        if (!hasProp(defined, id)) {
+                            return onError(makeError('notloaded', 'Module name "' +
+                                        id +
+                                        '" has not been loaded yet for context: ' +
+                                        contextName +
+                                        (relMap ? '' : '. Use require([])')));
+                        }
+                        return defined[id];
+                    }
+
+                    //Grab defines waiting in the global queue.
+                    intakeDefines();
+
+                    //Mark all the dependencies as needing to be loaded.
+                    context.nextTick(function () {
+                        //Some defines could have been added since the
+                        //require call, collect them.
+                        intakeDefines();
+
+                        requireMod = getModule(makeModuleMap(null, relMap));
+
+                        //Store if map config should be applied to this require
+                        //call for dependencies.
+                        requireMod.skipMap = options.skipMap;
+
+                        requireMod.init(deps, callback, errback, {
+                            enabled: true
+                        });
+
+                        checkLoaded();
+                    });
+
+                    return localRequire;
+                }
+
+                mixin(localRequire, {
+                    isBrowser: isBrowser,
+
+                    /**
+                     * Converts a module name + .extension into an URL path.
+                     * *Requires* the use of a module name. It does not support using
+                     * plain URLs like nameToUrl.
+                     */
+                    toUrl: function (moduleNamePlusExt) {
+                        var ext,
+                            index = moduleNamePlusExt.lastIndexOf('.'),
+                            segment = moduleNamePlusExt.split('/')[0],
+                            isRelative = segment === '.' || segment === '..';
+
+                        //Have a file extension alias, and it is not the
+                        //dots from a relative path.
+                        if (index !== -1 && (!isRelative || index > 1)) {
+                            ext = moduleNamePlusExt.substring(index, moduleNamePlusExt.length);
+                            moduleNamePlusExt = moduleNamePlusExt.substring(0, index);
+                        }
+
+                        return context.nameToUrl(normalize(moduleNamePlusExt,
+                                                relMap && relMap.id, true), ext,  true);
+                    },
+
+                    defined: function (id) {
+                        return hasProp(defined, makeModuleMap(id, relMap, false, true).id);
+                    },
+
+                    specified: function (id) {
+                        id = makeModuleMap(id, relMap, false, true).id;
+                        return hasProp(defined, id) || hasProp(registry, id);
+                    }
+                });
+
+                //Only allow undef on top level require calls
+                if (!relMap) {
+                    localRequire.undef = function (id) {
+                        //Bind any waiting define() calls to this context,
+                        //fix for #408
+                        takeGlobalQueue();
+
+                        var map = makeModuleMap(id, relMap, true),
+                            mod = getOwn(registry, id);
+
+                        removeScript(id);
+
+                        delete defined[id];
+                        delete urlFetched[map.url];
+                        delete undefEvents[id];
+
+                        //Clean queued defines too. Go backwards
+                        //in array so that the splices do not
+                        //mess up the iteration.
+                        eachReverse(defQueue, function(args, i) {
+                            if(args[0] === id) {
+                                defQueue.splice(i, 1);
+                            }
+                        });
+
+                        if (mod) {
+                            //Hold on to listeners in case the
+                            //module will be attempted to be reloaded
+                            //using a different config.
+                            if (mod.events.defined) {
+                                undefEvents[id] = mod.events;
+                            }
+
+                            cleanRegistry(id);
+                        }
+                    };
+                }
+
+                return localRequire;
+            },
+
+            /**
+             * Called to enable a module if it is still in the registry
+             * awaiting enablement. A second arg, parent, the parent module,
+             * is passed in for context, when this method is overriden by
+             * the optimizer. Not shown here to keep code compact.
+             */
+            enable: function (depMap) {
+                var mod = getOwn(registry, depMap.id);
+                if (mod) {
+                    getModule(depMap).enable();
+                }
+            },
+
+            /**
+             * Internal method used by environment adapters to complete a load event.
+             * A load event could be a script load or just a load pass from a synchronous
+             * load call.
+             * @param {String} moduleName the name of the module to potentially complete.
+             */
+            completeLoad: function (moduleName) {
+                var found, args, mod,
+                    shim = getOwn(config.shim, moduleName) || {},
+                    shExports = shim.exports;
+
+                takeGlobalQueue();
+
+                while (defQueue.length) {
+                    args = defQueue.shift();
+                    if (args[0] === null) {
+                        args[0] = moduleName;
+                        //If already found an anonymous module and bound it
+                        //to this name, then this is some other anon module
+                        //waiting for its completeLoad to fire.
+                        if (found) {
+                            break;
+                        }
+                        found = true;
+                    } else if (args[0] === moduleName) {
+                        //Found matching define call for this script!
+                        found = true;
+                    }
+
+                    callGetModule(args);
+                }
+
+                //Do this after the cycle of callGetModule in case the result
+                //of those calls/init calls changes the registry.
+                mod = getOwn(registry, moduleName);
+
+                if (!found && !hasProp(defined, moduleName) && mod && !mod.inited) {
+                    if (config.enforceDefine && (!shExports || !getGlobal(shExports))) {
+                        if (hasPathFallback(moduleName)) {
+                            return;
+                        } else {
+                            return onError(makeError('nodefine',
+                                             'No define call for ' + moduleName,
+                                             null,
+                                             [moduleName]));
+                        }
+                    } else {
+                        //A script that does not call define(), so just simulate
+                        //the call for it.
+                        callGetModule([moduleName, (shim.deps || []), shim.exportsFn]);
+                    }
+                }
+
+                checkLoaded();
+            },
+
+            /**
+             * Converts a module name to a file path. Supports cases where
+             * moduleName may actually be just an URL.
+             * Note that it **does not** call normalize on the moduleName,
+             * it is assumed to have already been normalized. This is an
+             * internal API, not a public one. Use toUrl for the public API.
+             */
+            nameToUrl: function (moduleName, ext, skipExt) {
+                var paths, syms, i, parentModule, url,
+                    parentPath, bundleId,
+                    pkgMain = getOwn(config.pkgs, moduleName);
+
+                if (pkgMain) {
+                    moduleName = pkgMain;
+                }
+
+                bundleId = getOwn(bundlesMap, moduleName);
+
+                if (bundleId) {
+                    return context.nameToUrl(bundleId, ext, skipExt);
+                }
+
+                //If a colon is in the URL, it indicates a protocol is used and it is just
+                //an URL to a file, or if it starts with a slash, contains a query arg (i.e. ?)
+                //or ends with .js, then assume the user meant to use an url and not a module id.
+                //The slash is important for protocol-less URLs as well as full paths.
+                if (req.jsExtRegExp.test(moduleName)) {
+                    //Just a plain path, not module name lookup, so just return it.
+                    //Add extension if it is included. This is a bit wonky, only non-.js things pass
+                    //an extension, this method probably needs to be reworked.
+                    url = moduleName + (ext || '');
+                } else {
+                    //A module that needs to be converted to a path.
+                    paths = config.paths;
+
+                    syms = moduleName.split('/');
+                    //For each module name segment, see if there is a path
+                    //registered for it. Start with most specific name
+                    //and work up from it.
+                    for (i = syms.length; i > 0; i -= 1) {
+                        parentModule = syms.slice(0, i).join('/');
+
+                        parentPath = getOwn(paths, parentModule);
+                        if (parentPath) {
+                            //If an array, it means there are a few choices,
+                            //Choose the one that is desired
+                            if (isArray(parentPath)) {
+                                parentPath = parentPath[0];
+                            }
+                            syms.splice(0, i, parentPath);
+                            break;
+                        }
+                    }
+
+                    //Join the path parts together, then figure out if baseUrl is needed.
+                    url = syms.join('/');
+                    url += (ext || (/^data\:|\?/.test(url) || skipExt ? '' : '.js'));
+                    url = (url.charAt(0) === '/' || url.match(/^[\w\+\.\-]+:/) ? '' : config.baseUrl) + url;
+                }
+
+                return config.urlArgs ? url +
+                                        ((url.indexOf('?') === -1 ? '?' : '&') +
+                                         config.urlArgs) : url;
+            },
+
+            //Delegates to req.load. Broken out as a separate function to
+            //allow overriding in the optimizer.
+            load: function (id, url) {
+                req.load(context, id, url);
+            },
+
+            /**
+             * Executes a module callback function. Broken out as a separate function
+             * solely to allow the build system to sequence the files in the built
+             * layer in the right sequence.
+             *
+             * @private
+             */
+            execCb: function (name, callback, args, exports) {
+                return callback.apply(exports, args);
+            },
+
+            /**
+             * callback for script loads, used to check status of loading.
+             *
+             * @param {Event} evt the event from the browser for the script
+             * that was loaded.
+             */
+            onScriptLoad: function (evt) {
+                //Using currentTarget instead of target for Firefox 2.0's sake. Not
+                //all old browsers will be supported, but this one was easy enough
+                //to support and still makes sense.
+                if (evt.type === 'load' ||
+                        (readyRegExp.test((evt.currentTarget || evt.srcElement).readyState))) {
+                    //Reset interactive script so a script node is not held onto for
+                    //to long.
+                    interactiveScript = null;
+
+                    //Pull out the name of the module and the context.
+                    var data = getScriptData(evt);
+                    context.completeLoad(data.id);
+                }
+            },
+
+            /**
+             * Callback for script errors.
+             */
+            onScriptError: function (evt) {
+                var data = getScriptData(evt);
+                if (!hasPathFallback(data.id)) {
+                    return onError(makeError('scripterror', 'Script error for: ' + data.id, evt, [data.id]));
+                }
+            }
+        };
+
+        context.require = context.makeRequire();
+        return context;
+    }
+
+    /**
+     * Main entry point.
+     *
+     * If the only argument to require is a string, then the module that
+     * is represented by that string is fetched for the appropriate context.
+     *
+     * If the first argument is an array, then it will be treated as an array
+     * of dependency string names to fetch. An optional function callback can
+     * be specified to execute when all of those dependencies are available.
+     *
+     * Make a local req variable to help Caja compliance (it assumes things
+     * on a require that are not standardized), and to give a short
+     * name for minification/local scope use.
+     */
+    req = requirejs = function (deps, callback, errback, optional) {
+
+        //Find the right context, use default
+        var context, config,
+            contextName = defContextName;
+
+        // Determine if have config object in the call.
+        if (!isArray(deps) && typeof deps !== 'string') {
+            // deps is a config object
+            config = deps;
+            if (isArray(callback)) {
+                // Adjust args if there are dependencies
+                deps = callback;
+                callback = errback;
+                errback = optional;
+            } else {
+                deps = [];
+            }
+        }
+
+        if (config && config.context) {
+            contextName = config.context;
+        }
+
+        context = getOwn(contexts, contextName);
+        if (!context) {
+            context = contexts[contextName] = req.s.newContext(contextName);
+        }
+
+        if (config) {
+            context.configure(config);
+        }
+
+        return context.require(deps, callback, errback);
+    };
+
+    /**
+     * Support require.config() to make it easier to cooperate with other
+     * AMD loaders on globally agreed names.
+     */
+    req.config = function (config) {
+        return req(config);
+    };
+
+    /**
+     * Execute something after the current tick
+     * of the event loop. Override for other envs
+     * that have a better solution than setTimeout.
+     * @param  {Function} fn function to execute later.
+     */
+    req.nextTick = typeof setTimeout !== 'undefined' ? function (fn) {
+        setTimeout(fn, 4);
+    } : function (fn) { fn(); };
+
+    /**
+     * Export require as a global, but only if it does not already exist.
+     */
+    if (!require) {
+        require = req;
+    }
+
+    req.version = version;
+
+    //Used to filter out dependencies that are already paths.
+    req.jsExtRegExp = /^\/|:|\?|\.js$/;
+    req.isBrowser = isBrowser;
+    s = req.s = {
+        contexts: contexts,
+        newContext: newContext
+    };
+
+    //Create default context.
+    req({});
+
+    //Exports some context-sensitive methods on global require.
+    each([
+        'toUrl',
+        'undef',
+        'defined',
+        'specified'
+    ], function (prop) {
+        //Reference from contexts instead of early binding to default context,
+        //so that during builds, the latest instance of the default context
+        //with its config gets used.
+        req[prop] = function () {
+            var ctx = contexts[defContextName];
+            return ctx.require[prop].apply(ctx, arguments);
+        };
+    });
+
+    if (isBrowser) {
+        head = s.head = document.getElementsByTagName('head')[0];
+        //If BASE tag is in play, using appendChild is a problem for IE6.
+        //When that browser dies, this can be removed. Details in this jQuery bug:
+        //http://dev.jquery.com/ticket/2709
+        baseElement = document.getElementsByTagName('base')[0];
+        if (baseElement) {
+            head = s.head = baseElement.parentNode;
+        }
+    }
+
+    /**
+     * Any errors that require explicitly generates will be passed to this
+     * function. Intercept/override it if you want custom error handling.
+     * @param {Error} err the error object.
+     */
+    req.onError = defaultOnError;
+
+    /**
+     * Creates the node for the load command. Only used in browser envs.
+     */
+    req.createNode = function (config, moduleName, url) {
+        var node = config.xhtml ?
+                document.createElementNS('http://www.w3.org/1999/xhtml', 'html:script') :
+                document.createElement('script');
+        node.type = config.scriptType || 'text/javascript';
+        node.charset = 'utf-8';
+        node.async = true;
+        return node;
+    };
+
+    /**
+     * Does the request to load a module for the browser case.
+     * Make this a separate function to allow other environments
+     * to override it.
+     *
+     * @param {Object} context the require context to find state.
+     * @param {String} moduleName the name of the module.
+     * @param {Object} url the URL to the module.
+     */
+    req.load = function (context, moduleName, url) {
+        var config = (context && context.config) || {},
+            node;
+        if (isBrowser) {
+            //In the browser so use a script tag
+            node = req.createNode(config, moduleName, url);
+
+            node.setAttribute('data-requirecontext', context.contextName);
+            node.setAttribute('data-requiremodule', moduleName);
+
+            //Set up load listener. Test attachEvent first because IE9 has
+            //a subtle issue in its addEventListener and script onload firings
+            //that do not match the behavior of all other browsers with
+            //addEventListener support, which fire the onload event for a
+            //script right after the script execution. See:
+            //https://connect.microsoft.com/IE/feedback/details/648057/script-onload-event-is-not-fired-immediately-after-script-execution
+            //UNFORTUNATELY Opera implements attachEvent but does not follow the script
+            //script execution mode.
+            if (node.attachEvent &&
+                    //Check if node.attachEvent is artificially added by custom script or
+                    //natively supported by browser
+                    //read https://github.com/jrburke/requirejs/issues/187
+                    //if we can NOT find [native code] then it must NOT natively supported.
+                    //in IE8, node.attachEvent does not have toString()
+                    //Note the test for "[native code" with no closing brace, see:
+                    //https://github.com/jrburke/requirejs/issues/273
+                    !(node.attachEvent.toString && node.attachEvent.toString().indexOf('[native code') < 0) &&
+                    !isOpera) {
+                //Probably IE. IE (at least 6-8) do not fire
+                //script onload right after executing the script, so
+                //we cannot tie the anonymous define call to a name.
+                //However, IE reports the script as being in 'interactive'
+                //readyState at the time of the define call.
+                useInteractive = true;
+
+                node.attachEvent('onreadystatechange', context.onScriptLoad);
+                //It would be great to add an error handler here to catch
+                //404s in IE9+. However, onreadystatechange will fire before
+                //the error handler, so that does not help. If addEventListener
+                //is used, then IE will fire error before load, but we cannot
+                //use that pathway given the connect.microsoft.com issue
+                //mentioned above about not doing the 'script execute,
+                //then fire the script load event listener before execute
+                //next script' that other browsers do.
+                //Best hope: IE10 fixes the issues,
+                //and then destroys all installs of IE 6-9.
+                //node.attachEvent('onerror', context.onScriptError);
+            } else {
+                node.addEventListener('load', context.onScriptLoad, false);
+                node.addEventListener('error', context.onScriptError, false);
+            }
+            node.src = url;
+
+            //For some cache cases in IE 6-8, the script executes before the end
+            //of the appendChild execution, so to tie an anonymous define
+            //call to the module name (which is stored on the node), hold on
+            //to a reference to this node, but clear after the DOM insertion.
+            currentlyAddingScript = node;
+            if (baseElement) {
+                head.insertBefore(node, baseElement);
+            } else {
+                head.appendChild(node);
+            }
+            currentlyAddingScript = null;
+
+            return node;
+        } else if (isWebWorker) {
+            try {
+                //In a web worker, use importScripts. This is not a very
+                //efficient use of importScripts, importScripts will block until
+                //its script is downloaded and evaluated. However, if web workers
+                //are in play, the expectation that a build has been done so that
+                //only one script needs to be loaded anyway. This may need to be
+                //reevaluated if other use cases become common.
+                importScripts(url);
+
+                //Account for anonymous modules
+                context.completeLoad(moduleName);
+            } catch (e) {
+                context.onError(makeError('importscripts',
+                                'importScripts failed for ' +
+                                    moduleName + ' at ' + url,
+                                e,
+                                [moduleName]));
+            }
+        }
+    };
+
+    function getInteractiveScript() {
+        if (interactiveScript && interactiveScript.readyState === 'interactive') {
+            return interactiveScript;
+        }
+
+        eachReverse(scripts(), function (script) {
+            if (script.readyState === 'interactive') {
+                return (interactiveScript = script);
+            }
+        });
+        return interactiveScript;
+    }
+
+    //Look for a data-main script attribute, which could also adjust the baseUrl.
+    if (isBrowser && !cfg.skipDataMain) {
+        //Figure out baseUrl. Get it from the script tag with require.js in it.
+        eachReverse(scripts(), function (script) {
+            //Set the 'head' where we can append children by
+            //using the script's parent.
+            if (!head) {
+                head = script.parentNode;
+            }
+
+            //Look for a data-main attribute to set main script for the page
+            //to load. If it is there, the path to data main becomes the
+            //baseUrl, if it is not already set.
+            dataMain = script.getAttribute('data-main');
+            if (dataMain) {
+                //Preserve dataMain in case it is a path (i.e. contains '?')
+                mainScript = dataMain;
+
+                //Set final baseUrl if there is not already an explicit one.
+                if (!cfg.baseUrl) {
+                    //Pull off the directory of data-main for use as the
+                    //baseUrl.
+                    src = mainScript.split('/');
+                    mainScript = src.pop();
+                    subPath = src.length ? src.join('/')  + '/' : './';
+
+                    cfg.baseUrl = subPath;
+                }
+
+                //Strip off any trailing .js since mainScript is now
+                //like a module name.
+                mainScript = mainScript.replace(jsSuffixRegExp, '');
+
+                 //If mainScript is still a path, fall back to dataMain
+                if (req.jsExtRegExp.test(mainScript)) {
+                    mainScript = dataMain;
+                }
+
+                //Put the data-main script in the files to load.
+                cfg.deps = cfg.deps ? cfg.deps.concat(mainScript) : [mainScript];
+
+                return true;
+            }
+        });
+    }
+
+    /**
+     * The function that handles definitions of modules. Differs from
+     * require() in that a string for the module should be the first argument,
+     * and the function to execute after dependencies are loaded should
+     * return a value to define the module corresponding to the first argument's
+     * name.
+     */
+    define = function (name, deps, callback) {
+        var node, context;
+
+        //Allow for anonymous modules
+        if (typeof name !== 'string') {
+            //Adjust args appropriately
+            callback = deps;
+            deps = name;
+            name = null;
+        }
+
+        //This module may not have dependencies
+        if (!isArray(deps)) {
+            callback = deps;
+            deps = null;
+        }
+
+        //If no name, and callback is a function, then figure out if it a
+        //CommonJS thing with dependencies.
+        if (!deps && isFunction(callback)) {
+            deps = [];
+            //Remove comments from the callback string,
+            //look for require calls, and pull them into the dependencies,
+            //but only if there are function args.
+            if (callback.length) {
+                callback
+                    .toString()
+                    .replace(commentRegExp, '')
+                    .replace(cjsRequireRegExp, function (match, dep) {
+                        deps.push(dep);
+                    });
+
+                //May be a CommonJS thing even without require calls, but still
+                //could use exports, and module. Avoid doing exports and module
+                //work though if it just needs require.
+                //REQUIRES the function to expect the CommonJS variables in the
+                //order listed below.
+                deps = (callback.length === 1 ? ['require'] : ['require', 'exports', 'module']).concat(deps);
+            }
+        }
+
+        //If in IE 6-8 and hit an anonymous define() call, do the interactive
+        //work.
+        if (useInteractive) {
+            node = currentlyAddingScript || getInteractiveScript();
+            if (node) {
+                if (!name) {
+                    name = node.getAttribute('data-requiremodule');
+                }
+                context = contexts[node.getAttribute('data-requirecontext')];
+            }
+        }
+
+        //Always save off evaluating the def call until the script onload handler.
+        //This allows multiple modules to be in a file without prematurely
+        //tracing dependencies, and allows for anonymous module support,
+        //where the module name is not known until the script onload event
+        //occurs. If no context, use the global queue, and get it processed
+        //in the onscript load callback.
+        (context ? context.defQueue : globalDefQueue).push([name, deps, callback]);
+    };
+
+    define.amd = {
+        jQuery: true
+    };
+
+
+    /**
+     * Executes the text. Normally just uses eval, but can be modified
+     * to use a better, environment-specific call. Only used for transpiling
+     * loader plugins, not for plain JS modules.
+     * @param {String} text the text to execute/evaluate.
+     */
+    req.exec = function (text) {
+        /*jslint evil: true */
+        return eval(text);
+    };
+
+    //Set up with config info.
+    req(cfg);
+}(this));
+
+};
+
+
 WebGLDebugUtils = function() {
 
 /**
@@ -881,6 +2922,7 @@ return {
 };
 
 }();
+
 /**
  * @class Generic map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not
  * clash with internally generated IDs, which are numbers.
@@ -945,7 +2987,8 @@ var SceneJS_Map = function(items, _baseId) {
     this.removeItem = function(id) {
         delete this.items[id];
     };
-};/**
+};
+/**
  * The SceneJS object.
  */
 var SceneJS = new (function () {
@@ -953,7 +2996,7 @@ var SceneJS = new (function () {
     /**
      * This SceneJS version
      */
-    this.VERSION = '3.2';
+    this.VERSION = '3.2.0';
 
     this._baseStateId = 0;
 
@@ -1258,24 +3301,8 @@ var SceneJS = new (function () {
     };
 
 })();
-// Configure RequireJS to find plugins relative to plugins location
-(function () {
 
-    var pluginPath;
-
-    SceneJS.on("configs",
-        function (configs) {
-            if (configs.pluginPath != pluginPath) {
-                pluginPath = configs.pluginPath;
-                var libPath = pluginPath + "/lib";
-                require.config({
-                    paths:{
-                        "scenejsPluginDeps":libPath
-                    }
-                });
-            }
-        });
-})();/**
+/**
  *  @private
  */
 var SceneJS_eventManager = function () {
@@ -1368,6 +3395,7 @@ SceneJS_eventManager.prototype.unEvent = function (handlerId) {
     delete handlers[handlerId];
     this.typeHandlers[type].numSubs--;
 };
+
 /**
  * SceneJS plugin registry
  */
@@ -1494,7 +3522,8 @@ SceneJS.Plugins = new (function () {
         document.getElementsByTagName("head")[0].appendChild(script);
     }
 
-})();/**
+})();
+/**
  *  @private
  */
 var SceneJS_events = new (function () {
@@ -1677,6 +3706,7 @@ SceneJS.off = SceneJS.unEvent;
 
 
 
+
 /**
  *
  */
@@ -1791,6 +3821,7 @@ SceneJS_Canvas.prototype.loseWebGLContext = function () {
         this.canvas.loseContext();
     }
 };
+
 
 
 /**
@@ -2340,6 +4371,7 @@ if (!self.Int32Array) {
             clearTimeout(id);
         };
 }());
+
 /**
  * Backend module that provides single point through which exceptions may be raised
  *
@@ -2423,6 +4455,7 @@ SceneJS.errors._getErrorName = function(code) {
     }
     return null;
 };
+
 
 /**
  * Backend that manages configurations.
@@ -2518,6 +4551,7 @@ SceneJS.configure = SceneJS.setConfigs = SceneJS.setDebugConfigs = function () {
 SceneJS.getConfigs = SceneJS.getDebugConfigs = function (path) {
     return SceneJS_configsModule.getConfigs(path);
 };
+
 
 /**
  * @class Manages logging
@@ -2620,7 +4654,8 @@ SceneJS.log = new (function() {
         return funcs;
     };
 
-})();/* 
+})();
+/* 
  * Optimizations made based on glMatrix by Brandon Jones
  */
 
@@ -2647,6 +4682,7 @@ SceneJS.log = new (function() {
  *    distribution.
  */
 
+SceneJS.math = {};
 
 /**
  * @param u vec3
@@ -2655,7 +4691,7 @@ SceneJS.log = new (function() {
  * @return {vec3} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_divVec3 = function(u, v, dest) {
+SceneJS.math.divVec3 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2673,7 +4709,7 @@ var SceneJS_math_divVec3 = function(u, v, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_negateVector4 = function(v, dest) {
+SceneJS.math.negateVector4 = function(v, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2692,7 +4728,7 @@ var SceneJS_math_negateVector4 = function(v, dest) {
  * @return {vec4} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_addVec4 = function(u, v, dest) {
+SceneJS.math.addVec4 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2713,7 +4749,7 @@ var SceneJS_math_addVec4 = function(u, v, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_addVec4s = function(v, s, dest) {
+SceneJS.math.addVec4s = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2733,7 +4769,7 @@ var SceneJS_math_addVec4s = function(v, s, dest) {
  * @return {vec3} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_addVec3 = function(u, v, dest) {
+SceneJS.math.addVec3 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2752,7 +4788,7 @@ var SceneJS_math_addVec3 = function(u, v, dest) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_addVec3s = function(v, s, dest) {
+SceneJS.math.addVec3s = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2765,8 +4801,8 @@ var SceneJS_math_addVec3s = function(v, s, dest) {
 };
 
 /** @private */
-var SceneJS_math_addScalarVec4 = function(s, v, dest) {
-    return SceneJS_math_addVec4s(v, s, dest);
+SceneJS.math.addScalarVec4 = function(s, v, dest) {
+    return SceneJS.math.addVec4s(v, s, dest);
 };
 
 /**
@@ -2776,7 +4812,7 @@ var SceneJS_math_addScalarVec4 = function(s, v, dest) {
  * @return {vec4} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_subVec4 = function(u, v, dest) {
+SceneJS.math.subVec4 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2796,7 +4832,7 @@ var SceneJS_math_subVec4 = function(u, v, dest) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_subVec3 = function(u, v, dest) {
+SceneJS.math.subVec3 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2808,7 +4844,7 @@ var SceneJS_math_subVec3 = function(u, v, dest) {
     return dest;
 };
 
-var SceneJS_math_lerpVec3 = function(t, t1, t2, p1, p2) {
+SceneJS.math.lerpVec3 = function(t, t1, t2, p1, p2) {
     var f2 = (t - t1) / (t2 - t1);
     var f1 = 1.0 - f2;
     return  {
@@ -2826,7 +4862,7 @@ var SceneJS_math_lerpVec3 = function(t, t1, t2, p1, p2) {
  * @return {vec2} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_subVec2 = function(u, v, dest) {
+SceneJS.math.subVec2 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2844,7 +4880,7 @@ var SceneJS_math_subVec2 = function(u, v, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_subVec4Scalar = function(v, s, dest) {
+SceneJS.math.subVec4Scalar = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2864,7 +4900,7 @@ var SceneJS_math_subVec4Scalar = function(v, s, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_subScalarVec4 = function(v, s, dest) {
+SceneJS.math.subScalarVec4 = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2884,7 +4920,7 @@ var SceneJS_math_subScalarVec4 = function(v, s, dest) {
  * @return {vec4} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_mulVec4 = function(u, v, dest) {
+SceneJS.math.mulVec4 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2904,7 +4940,7 @@ var SceneJS_math_mulVec4 = function(u, v, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_mulVec4Scalar = function(v, s, dest) {
+SceneJS.math.mulVec4Scalar = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2925,7 +4961,7 @@ var SceneJS_math_mulVec4Scalar = function(v, s, dest) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_mulVec3Scalar = function(v, s, dest) {
+SceneJS.math.mulVec3Scalar = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2944,7 +4980,7 @@ var SceneJS_math_mulVec3Scalar = function(v, s, dest) {
  * @return {vec2} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_mulVec2Scalar = function(v, s, dest) {
+SceneJS.math.mulVec2Scalar = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -2963,7 +4999,7 @@ var SceneJS_math_mulVec2Scalar = function(v, s, dest) {
  * @return {vec4} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_divVec4 = function(u, v, dest) {
+SceneJS.math.divVec4 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -2983,7 +5019,7 @@ var SceneJS_math_divVec4 = function(u, v, dest) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_divScalarVec3 = function(s, v, dest) {
+SceneJS.math.divScalarVec3 = function(s, v, dest) {
     if (!dest) {
         dest = v;
     }
@@ -3002,7 +5038,7 @@ var SceneJS_math_divScalarVec3 = function(s, v, dest) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_divVec3s = function(v, s, dest) {
+SceneJS.math.divVec3s = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -3021,7 +5057,7 @@ var SceneJS_math_divVec3s = function(v, s, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_divVec4s = function(v, s, dest) {
+SceneJS.math.divVec4s = function(v, s, dest) {
     if (!dest) {
         dest = v;
     }
@@ -3042,7 +5078,7 @@ var SceneJS_math_divVec4s = function(v, s, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_divScalarVec4 = function(s, v, dest) {
+SceneJS.math.divScalarVec4 = function(s, v, dest) {
     if (!dest) {
         dest = v;
     }
@@ -3057,12 +5093,12 @@ var SceneJS_math_divScalarVec4 = function(s, v, dest) {
 
 
 /** @private */
-var SceneJS_math_dotVector4 = function(u, v) {
+SceneJS.math.dotVector4 = function(u, v) {
     return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2] + u[3] * v[3]);
 };
 
 /** @private */
-var SceneJS_math_cross3Vec4 = function(u, v) {
+SceneJS.math.cross3Vec4 = function(u, v) {
     var u0 = u[0], u1 = u[1], u2 = u[2];
     var v0 = v[0], v1 = v[1], v2 = v[2];
     return [
@@ -3079,7 +5115,7 @@ var SceneJS_math_cross3Vec4 = function(u, v) {
  * @return {vec3} dest if specified, u otherwise
  * @private
  */
-var SceneJS_math_cross3Vec3 = function(u, v, dest) {
+SceneJS.math.cross3Vec3 = function(u, v, dest) {
     if (!dest) {
         dest = u;
     }
@@ -3095,43 +5131,43 @@ var SceneJS_math_cross3Vec3 = function(u, v, dest) {
 };
 
 /** @private */
-var SceneJS_math_sqLenVec4 = function(v) {
-    return SceneJS_math_dotVector4(v, v);
+SceneJS.math.sqLenVec4 = function(v) {
+    return SceneJS.math.dotVector4(v, v);
 };
 
 /** @private */
-var SceneJS_math_lenVec4 = function(v) {
-    return Math.sqrt(SceneJS_math_sqLenVec4(v));
+SceneJS.math.lenVec4 = function(v) {
+    return Math.sqrt(SceneJS.math.sqLenVec4(v));
 };
 
 /** @private */
-var SceneJS_math_dotVector3 = function(u, v) {
+SceneJS.math.dotVector3 = function(u, v) {
     return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
 };
 
 /** @private */
-var SceneJS_math_dotVector2 = function(u, v) {
+SceneJS.math.dotVector2 = function(u, v) {
     return (u[0] * v[0] + u[1] * v[1]);
 };
 
 /** @private */
-var SceneJS_math_sqLenVec3 = function(v) {
-    return SceneJS_math_dotVector3(v, v);
+SceneJS.math.sqLenVec3 = function(v) {
+    return SceneJS.math.dotVector3(v, v);
 };
 
 /** @private */
-var SceneJS_math_sqLenVec2 = function(v) {
-    return SceneJS_math_dotVector2(v, v);
+SceneJS.math.sqLenVec2 = function(v) {
+    return SceneJS.math.dotVector2(v, v);
 };
 
 /** @private */
-var SceneJS_math_lenVec3 = function(v) {
-    return Math.sqrt(SceneJS_math_sqLenVec3(v));
+SceneJS.math.lenVec3 = function(v) {
+    return Math.sqrt(SceneJS.math.sqLenVec3(v));
 };
 
 /** @private */
-var SceneJS_math_lenVec2 = function(v) {
-    return Math.sqrt(SceneJS_math_sqLenVec2(v));
+SceneJS.math.lenVec2 = function(v) {
+    return Math.sqrt(SceneJS.math.sqLenVec2(v));
 };
 
 /**
@@ -3140,8 +5176,8 @@ var SceneJS_math_lenVec2 = function(v) {
  * @return {vec3} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_rcpVec3 = function(v, dest) {
-    return SceneJS_math_divScalarVec3(1.0, v, dest);
+SceneJS.math.rcpVec3 = function(v, dest) {
+    return SceneJS.math.divScalarVec3(1.0, v, dest);
 };
 
 /**
@@ -3150,50 +5186,50 @@ var SceneJS_math_rcpVec3 = function(v, dest) {
  * @return {vec4} dest if specified, v otherwise
  * @private
  */
-var SceneJS_math_normalizeVec4 = function(v, dest) {
-    var f = 1.0 / SceneJS_math_lenVec4(v);
-    return SceneJS_math_mulVec4Scalar(v, f, dest);
+SceneJS.math.normalizeVec4 = function(v, dest) {
+    var f = 1.0 / SceneJS.math.lenVec4(v);
+    return SceneJS.math.mulVec4Scalar(v, f, dest);
 };
 
 /** @private */
-var SceneJS_math_normalizeVec3 = function(v, dest) {
-    var f = 1.0 / SceneJS_math_lenVec3(v);
-    return SceneJS_math_mulVec3Scalar(v, f, dest);
+SceneJS.math.normalizeVec3 = function(v, dest) {
+    var f = 1.0 / SceneJS.math.lenVec3(v);
+    return SceneJS.math.mulVec3Scalar(v, f, dest);
 };
 
 // @private
-var SceneJS_math_normalizeVec2 = function(v, dest) {
-    var f = 1.0 / SceneJS_math_lenVec2(v);
-    return SceneJS_math_mulVec2Scalar(v, f, dest);
+SceneJS.math.normalizeVec2 = function(v, dest) {
+    var f = 1.0 / SceneJS.math.lenVec2(v);
+    return SceneJS.math.mulVec2Scalar(v, f, dest);
 };
 
 /** @private */
-var SceneJS_math_mat4 = function() {
+SceneJS.math.mat4 = function() {
     return new Array(16);
 };
 
 /** @private */
-var SceneJS_math_dupMat4 = function(m) {
+SceneJS.math.dupMat4 = function(m) {
     return m.slice(0, 16);
 };
 
 /** @private */
-var SceneJS_math_getCellMat4 = function(m, row, col) {
+SceneJS.math.getCellMat4 = function(m, row, col) {
     return m[row + col * 4];
 };
 
 /** @private */
-var SceneJS_math_setCellMat4 = function(m, row, col, s) {
+SceneJS.math.setCellMat4 = function(m, row, col, s) {
     m[row + col * 4] = s;
 };
 
 /** @private */
-var SceneJS_math_getRowMat4 = function(m, r) {
+SceneJS.math.getRowMat4 = function(m, r) {
     return [m[r], m[r + 4], m[r + 8], m[r + 12]];
 };
 
 /** @private */
-var SceneJS_math_setRowMat4 = function(m, r, v) {
+SceneJS.math.setRowMat4 = function(m, r, v) {
     m[r] = v[0];
     m[r + 4] = v[1];
     m[r + 8] = v[2];
@@ -3201,23 +5237,23 @@ var SceneJS_math_setRowMat4 = function(m, r, v) {
 };
 
 /** @private */
-var SceneJS_math_setRowMat4c = function(m, r, x, y, z, w) {
-    SceneJS_math_setRowMat4(m, r, [x,y,z,w]);
+SceneJS.math.setRowMat4c = function(m, r, x, y, z, w) {
+    SceneJS.math.setRowMat4(m, r, [x,y,z,w]);
 };
 
 /** @private */
-var SceneJS_math_setRowMat4s = function(m, r, s) {
-    SceneJS_math_setRowMat4c(m, r, s, s, s, s);
+SceneJS.math.setRowMat4s = function(m, r, s) {
+    SceneJS.math.setRowMat4c(m, r, s, s, s, s);
 };
 
 /** @private */
-var SceneJS_math_getColMat4 = function(m, c) {
+SceneJS.math.getColMat4 = function(m, c) {
     var i = c * 4;
     return [m[i], m[i + 1],m[i + 2],m[i + 3]];
 };
 
 /** @private */
-var SceneJS_math_setColMat4v = function(m, c, v) {
+SceneJS.math.setColMat4v = function(m, c, v) {
     var i = c * 4;
     m[i] = v[0];
     m[i + 1] = v[1];
@@ -3226,17 +5262,17 @@ var SceneJS_math_setColMat4v = function(m, c, v) {
 };
 
 /** @private */
-var SceneJS_math_setColMat4c = function(m, c, x, y, z, w) {
-    SceneJS_math_setColMat4v(m, c, [x,y,z,w]);
+SceneJS.math.setColMat4c = function(m, c, x, y, z, w) {
+    SceneJS.math.setColMat4v(m, c, [x,y,z,w]);
 };
 
 /** @private */
-var SceneJS_math_setColMat4Scalar = function(m, c, s) {
-    SceneJS_math_setColMat4c(m, c, s, s, s, s);
+SceneJS.math.setColMat4Scalar = function(m, c, s) {
+    SceneJS.math.setColMat4c(m, c, s, s, s, s);
 };
 
 /** @private */
-var SceneJS_math_mat4To3 = function(m) {
+SceneJS.math.mat4To3 = function(m) {
     return [
         m[0],m[1],m[2],
         m[4],m[5],m[6],
@@ -3245,7 +5281,7 @@ var SceneJS_math_mat4To3 = function(m) {
 };
 
 /** @private */
-var SceneJS_math_m4s = function(s) {
+SceneJS.math.m4s = function(s) {
     return [
         s,s,s,s,
         s,s,s,s,
@@ -3255,17 +5291,17 @@ var SceneJS_math_m4s = function(s) {
 };
 
 /** @private */
-var SceneJS_math_setMat4ToZeroes = function() {
-    return SceneJS_math_m4s(0.0);
+SceneJS.math.setMat4ToZeroes = function() {
+    return SceneJS.math.m4s(0.0);
 };
 
 /** @private */
-var SceneJS_math_setMat4ToOnes = function() {
-    return SceneJS_math_m4s(1.0);
+SceneJS.math.setMat4ToOnes = function() {
+    return SceneJS.math.m4s(1.0);
 };
 
 /** @private */
-var SceneJS_math_diagonalMat4v = function(v) {
+SceneJS.math.diagonalMat4v = function(v) {
     return [
         v[0], 0.0, 0.0, 0.0,
         0.0,v[1], 0.0, 0.0,
@@ -3275,22 +5311,22 @@ var SceneJS_math_diagonalMat4v = function(v) {
 };
 
 /** @private */
-var SceneJS_math_diagonalMat4c = function(x, y, z, w) {
-    return SceneJS_math_diagonalMat4v([x,y,z,w]);
+SceneJS.math.diagonalMat4c = function(x, y, z, w) {
+    return SceneJS.math.diagonalMat4v([x,y,z,w]);
 };
 
 /** @private */
-var SceneJS_math_diagonalMat4s = function(s) {
-    return SceneJS_math_diagonalMat4c(s, s, s, s);
+SceneJS.math.diagonalMat4s = function(s) {
+    return SceneJS.math.diagonalMat4c(s, s, s, s);
 };
 
 /** @private */
-var SceneJS_math_identityMat4 = function() {
-    return SceneJS_math_diagonalMat4v([1.0,1.0,1.0,1.0]);
+SceneJS.math.identityMat4 = function() {
+    return SceneJS.math.diagonalMat4v([1.0,1.0,1.0,1.0]);
 };
 
 /** @private */
-var SceneJS_math_isIdentityMat4 = function(m) {
+SceneJS.math.isIdentityMat4 = function(m) {
     if (m[0] !== 1.0 || m[1] !== 0.0 || m[2] !== 0.0 || m[3] !== 0.0 ||
         m[4] !== 0.0 || m[5] !== 1.0 || m[6] !== 0.0 || m[7] !== 0.0 ||
         m[8] !== 0.0 || m[9] !== 0.0 || m[10] !== 1.0 || m[11] !== 0.0 ||
@@ -3308,7 +5344,7 @@ var SceneJS_math_isIdentityMat4 = function(m) {
  * @return {mat4} dest if specified, m otherwise
  * @private
  */
-var SceneJS_math_negateMat4 = function(m, dest) {
+SceneJS.math.negateMat4 = function(m, dest) {
     if (!dest) {
         dest = m;
     }
@@ -3340,7 +5376,7 @@ var SceneJS_math_negateMat4 = function(m, dest) {
  * @return {mat4} dest if specified, a otherwise
  * @private
  */
-var SceneJS_math_addMat4 = function(a, b, dest) {
+SceneJS.math.addMat4 = function(a, b, dest) {
     if (!dest) {
         dest = a;
     }
@@ -3372,7 +5408,7 @@ var SceneJS_math_addMat4 = function(a, b, dest) {
  * @return {mat4} dest if specified, m otherwise
  * @private
  */
-var SceneJS_math_addMat4Scalar = function(m, s, dest) {
+SceneJS.math.addMat4Scalar = function(m, s, dest) {
     if (!dest) {
         dest = m;
     }
@@ -3398,8 +5434,8 @@ var SceneJS_math_addMat4Scalar = function(m, s, dest) {
 };
 
 /** @private */
-var SceneJS_math_addScalarMat4 = function(s, m, dest) {
-    return SceneJS_math_addMat4Scalar(m, s, dest);
+SceneJS.math.addScalarMat4 = function(s, m, dest) {
+    return SceneJS.math.addMat4Scalar(m, s, dest);
 };
 
 /**
@@ -3409,7 +5445,7 @@ var SceneJS_math_addScalarMat4 = function(s, m, dest) {
  * @return {mat4} dest if specified, a otherwise
  * @private
  */
-var SceneJS_math_subMat4 = function(a, b, dest) {
+SceneJS.math.subMat4 = function(a, b, dest) {
     if (!dest) {
         dest = a;
     }
@@ -3441,7 +5477,7 @@ var SceneJS_math_subMat4 = function(a, b, dest) {
  * @return {mat4} dest if specified, m otherwise
  * @private
  */
-var SceneJS_math_subMat4Scalar = function(m, s, dest) {
+SceneJS.math.subMat4Scalar = function(m, s, dest) {
     if (!dest) {
         dest = m;
     }
@@ -3473,7 +5509,7 @@ var SceneJS_math_subMat4Scalar = function(m, s, dest) {
  * @return {mat4} dest if specified, m otherwise
  * @private
  */
-var SceneJS_math_subScalarMat4 = function(s, m, dest) {
+SceneJS.math.subScalarMat4 = function(s, m, dest) {
     if (!dest) {
         dest = m;
     }
@@ -3505,7 +5541,7 @@ var SceneJS_math_subScalarMat4 = function(s, m, dest) {
  * @return {mat4} dest if specified, a otherwise
  * @private
  */
-var SceneJS_math_mulMat4 = function(a, b, dest) {
+SceneJS.math.mulMat4 = function(a, b, dest) {
     if (!dest) {
         dest = a;
     }
@@ -3548,7 +5584,7 @@ var SceneJS_math_mulMat4 = function(a, b, dest) {
  * @return {mat4} dest if specified, m otherwise
  * @private
  */
-var SceneJS_math_mulMat4s = function(m, s, dest)
+SceneJS.math.mulMat4s = function(m, s, dest)
 {
     if (!dest) {
         dest = m;
@@ -3580,7 +5616,7 @@ var SceneJS_math_mulMat4s = function(m, s, dest)
  * @return {vec4}
  * @private
  */
-var SceneJS_math_mulMat4v4 = function(m, v) {
+SceneJS.math.mulMat4v4 = function(m, v) {
     var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
 
     return [
@@ -3597,7 +5633,7 @@ var SceneJS_math_mulMat4v4 = function(m, v) {
  * @return {mat4} dest if specified, mat otherwise
  * @private
  */
-var SceneJS_math_transposeMat4 = function(mat, dest) {
+SceneJS.math.transposeMat4 = function(mat, dest) {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     var m4 = mat[4], m14 = mat[14], m8 = mat[8];
     var m13 = mat[13], m12 = mat[12], m9 = mat[9];
@@ -3641,7 +5677,7 @@ var SceneJS_math_transposeMat4 = function(mat, dest) {
 };
 
 /** @private */
-var SceneJS_math_determinantMat4 = function(mat) {
+SceneJS.math.determinantMat4 = function(mat) {
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = mat[0], a01 = mat[1], a02 = mat[2], a03 = mat[3];
     var a10 = mat[4], a11 = mat[5], a12 = mat[6], a13 = mat[7];
@@ -3662,7 +5698,7 @@ var SceneJS_math_determinantMat4 = function(mat) {
  * @return {mat4} dest if specified, mat otherwise
  * @private
  */
-var SceneJS_math_inverseMat4 = function(mat, dest) {
+SceneJS.math.inverseMat4 = function(mat, dest) {
     if (!dest) {
         dest = mat;
     }
@@ -3710,13 +5746,13 @@ var SceneJS_math_inverseMat4 = function(mat, dest) {
 };
 
 /** @private */
-var SceneJS_math_traceMat4 = function(m) {
+SceneJS.math.traceMat4 = function(m) {
     return (m[0] + m[5] + m[10] + m[15]);
 };
 
 /** @private */
-var SceneJS_math_translationMat4v = function(v) {
-    var m = SceneJS_math_identityMat4();
+SceneJS.math.translationMat4v = function(v) {
+    var m = SceneJS.math.identityMat4();
     m[12] = v[0];
     m[13] = v[1];
     m[14] = v[2];
@@ -3724,18 +5760,18 @@ var SceneJS_math_translationMat4v = function(v) {
 };
 
 /** @private */
-var SceneJS_math_translationMat4c = function(x, y, z) {
-    return SceneJS_math_translationMat4v([x,y,z]);
+SceneJS.math.translationMat4c = function(x, y, z) {
+    return SceneJS.math.translationMat4v([x,y,z]);
 };
 
 /** @private */
-var SceneJS_math_translationMat4s = function(s) {
-    return SceneJS_math_translationMat4c(s, s, s);
+SceneJS.math.translationMat4s = function(s) {
+    return SceneJS.math.translationMat4c(s, s, s);
 };
 
 /** @private */
-var SceneJS_math_rotationMat4v = function(anglerad, axis) {
-    var ax = SceneJS_math_normalizeVec4([axis[0],axis[1],axis[2],0.0]);
+SceneJS.math.rotationMat4v = function(anglerad, axis) {
+    var ax = SceneJS.math.normalizeVec4([axis[0],axis[1],axis[2],0.0]);
     var s = Math.sin(anglerad);
     var c = Math.cos(anglerad);
     var q = 1.0 - c;
@@ -3756,7 +5792,7 @@ var SceneJS_math_rotationMat4v = function(anglerad, axis) {
     ys = y * s;
     zs = z * s;
 
-    var m = SceneJS_math_mat4();
+    var m = SceneJS.math.mat4();
 
     m[0] = (q * x * x) + c;
     m[1] = (q * xy) + zs;
@@ -3782,13 +5818,13 @@ var SceneJS_math_rotationMat4v = function(anglerad, axis) {
 };
 
 /** @private */
-var SceneJS_math_rotationMat4c = function(anglerad, x, y, z) {
-    return SceneJS_math_rotationMat4v(anglerad, [x,y,z]);
+SceneJS.math.rotationMat4c = function(anglerad, x, y, z) {
+    return SceneJS.math.rotationMat4v(anglerad, [x,y,z]);
 };
 
 /** @private */
-var SceneJS_math_scalingMat4v = function(v) {
-    var m = SceneJS_math_identityMat4();
+SceneJS.math.scalingMat4v = function(v) {
+    var m = SceneJS.math.identityMat4();
     m[0] = v[0];
     m[5] = v[1];
     m[10] = v[2];
@@ -3796,19 +5832,19 @@ var SceneJS_math_scalingMat4v = function(v) {
 };
 
 /** @private */
-var SceneJS_math_scalingMat4c = function(x, y, z) {
-    return SceneJS_math_scalingMat4v([x,y,z]);
+SceneJS.math.scalingMat4c = function(x, y, z) {
+    return SceneJS.math.scalingMat4v([x,y,z]);
 };
 
 /** @private */
-var SceneJS_math_scalingMat4s = function(s) {
-    return SceneJS_math_scalingMat4c(s, s, s);
+SceneJS.math.scalingMat4s = function(s) {
+    return SceneJS.math.scalingMat4c(s, s, s);
 };
 
 /**
  * Default lookat properties - eye at 0,0,1, looking at 0,0,0, up vector pointing up Y-axis
  */
-var SceneJS_math_LOOKAT_OBJ = {
+SceneJS.math.LOOKAT_OBJ = {
     eye:    {x: 0, y:0, z:10.0 },
     look:   {x:0, y:0, z:0.0 },
     up:     {x:0, y:1, z:0.0 }
@@ -3817,7 +5853,7 @@ var SceneJS_math_LOOKAT_OBJ = {
 /**
  * Default lookat properties in array form - eye at 0,0,1, looking at 0,0,0, up vector pointing up Y-axis
  */
-var SceneJS_math_LOOKAT_ARRAYS = {
+SceneJS.math.LOOKAT_ARRAYS = {
     eye:    [0, 0, 10.0],
     look:   [0, 0, 0.0 ],
     up:     [0, 1, 0.0 ]
@@ -3826,7 +5862,7 @@ var SceneJS_math_LOOKAT_ARRAYS = {
 /**
  * Default orthographic projection properties
  */
-var SceneJS_math_ORTHO_OBJ = {
+SceneJS.math.ORTHO_OBJ = {
     left: -1.0,
     right: 1.0,
     bottom: -1.0,
@@ -3843,9 +5879,9 @@ var SceneJS_math_ORTHO_OBJ = {
  *
  * @return {mat4} dest if specified, a new mat4 otherwise
  */
-var SceneJS_math_lookAtMat4v = function(pos, target, up, dest) {
+SceneJS.math.lookAtMat4v = function(pos, target, up, dest) {
     if (!dest) {
-        dest = SceneJS_math_mat4();
+        dest = SceneJS.math.mat4();
     }
 
     var posx = pos[0],
@@ -3859,7 +5895,7 @@ var SceneJS_math_lookAtMat4v = function(pos, target, up, dest) {
             targetz = target[2];
 
     if (posx == targetx && posy == targety && posz == targetz) {
-        return SceneJS_math_identityMat4();
+        return SceneJS.math.identityMat4();
     }
 
     var z0,z1,z2,x0,x1,x2,y0,y1,y2,len;
@@ -3929,14 +5965,14 @@ var SceneJS_math_lookAtMat4v = function(pos, target, up, dest) {
 };
 
 /** @private */
-var SceneJS_math_lookAtMat4c = function(posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
-    return SceneJS_math_lookAtMat4v([posx,posy,posz], [targetx,targety,targetz], [upx,upy,upz]);
+SceneJS.math.lookAtMat4c = function(posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
+    return SceneJS.math.lookAtMat4v([posx,posy,posz], [targetx,targety,targetz], [upx,upy,upz]);
 };
 
 /** @private */
-var SceneJS_math_orthoMat4c = function(left, right, bottom, top, near, far, dest) {
+SceneJS.math.orthoMat4c = function(left, right, bottom, top, near, far, dest) {
     if (!dest) {
-        dest = SceneJS_math_mat4();
+        dest = SceneJS.math.mat4();
     }
     var rl = (right - left);
     var tb = (top - bottom);
@@ -3966,16 +6002,16 @@ var SceneJS_math_orthoMat4c = function(left, right, bottom, top, near, far, dest
 };
 
 /** @private */
-var SceneJS_math_frustumMat4v = function(fmin, fmax) {
+SceneJS.math.frustumMat4v = function(fmin, fmax) {
     var fmin4 = [fmin[0],fmin[1],fmin[2],0.0];
     var fmax4 = [fmax[0],fmax[1],fmax[2],0.0];
-    var vsum = SceneJS_math_mat4();
-    SceneJS_math_addVec4(fmax4, fmin4, vsum);
-    var vdif = SceneJS_math_mat4();
-    SceneJS_math_subVec4(fmax4, fmin4, vdif);
+    var vsum = SceneJS.math.mat4();
+    SceneJS.math.addVec4(fmax4, fmin4, vsum);
+    var vdif = SceneJS.math.mat4();
+    SceneJS.math.subVec4(fmax4, fmin4, vdif);
     var t = 2.0 * fmin4[2];
 
-    var m = SceneJS_math_mat4();
+    var m = SceneJS.math.mat4();
     var vdif0 = vdif[0], vdif1 = vdif[1], vdif2 = vdif[2];
 
     m[0] = t / vdif0;
@@ -4002,9 +6038,9 @@ var SceneJS_math_frustumMat4v = function(fmin, fmax) {
 };
 
 /** @private */
-var SceneJS_math_frustumMatrix4 = function(left, right, bottom, top, near, far, dest) {
+SceneJS.math.frustumMatrix4 = function(left, right, bottom, top, near, far, dest) {
     if (!dest) {
-        dest = SceneJS_math_mat4();
+        dest = SceneJS.math.mat4();
     }
     var rl = (right - left);
     var tb = (top - bottom);
@@ -4030,7 +6066,7 @@ var SceneJS_math_frustumMatrix4 = function(left, right, bottom, top, near, far, 
 
 
 /** @private */
-var SceneJS_math_perspectiveMatrix4 = function(fovyrad, aspectratio, znear, zfar) {
+SceneJS.math.perspectiveMatrix4 = function(fovyrad, aspectratio, znear, zfar) {
     var pmin = [];
     var pmax = [];
 
@@ -4043,11 +6079,11 @@ var SceneJS_math_perspectiveMatrix4 = function(fovyrad, aspectratio, znear, zfar
     pmax[0] = pmax[1] * aspectratio;
     pmin[0] = -pmax[0];
 
-    return SceneJS_math_frustumMat4v(pmin, pmax);
+    return SceneJS.math.frustumMat4v(pmin, pmax);
 };
 
 /** @private */
-var SceneJS_math_transformPoint3 = function(m, p) {
+SceneJS.math.transformPoint3 = function(m, p) {
     var p0 = p[0], p1 = p[1], p2 = p[2];
     return [
         (m[0] * p0) + (m[4] * p1) + (m[8] * p2) + m[12],
@@ -4059,7 +6095,7 @@ var SceneJS_math_transformPoint3 = function(m, p) {
 
 
 /** @private */
-var SceneJS_math_transformPoints3 = function(m, points) {
+SceneJS.math.transformPoints3 = function(m, points) {
     var result = new Array(points.length);
     var len = points.length;
     var p0, p1, p2;
@@ -4090,7 +6126,7 @@ var SceneJS_math_transformPoints3 = function(m, points) {
 };
 
 /** @private */
-var SceneJS_math_transformVector3 = function(m, v) {
+SceneJS.math.transformVector3 = function(m, v) {
     var v0 = v[0], v1 = v[1], v2 = v[2];
     return [
         (m[0] * v0) + (m[4] * v1) + (m[8] * v2),
@@ -4099,7 +6135,7 @@ var SceneJS_math_transformVector3 = function(m, v) {
     ];
 };
 
-var SceneJS_math_transformVector4 = function(m, v) {
+SceneJS.math.transformVector4 = function(m, v) {
     var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
     return [
         m[ 0] * v0 + m[ 4] * v1 + m[ 8] * v2 + m[12] * v3,
@@ -4110,14 +6146,14 @@ var SceneJS_math_transformVector4 = function(m, v) {
 };
 
 /** @private */
-var SceneJS_math_projectVec4 = function(v) {
+SceneJS.math.projectVec4 = function(v) {
     var f = 1.0 / v[3];
     return [v[0] * f, v[1] * f, v[2] * f, 1.0];
 };
 
 
 /** @private */
-var SceneJS_math_Plane3 = function (normal, offset, normalize) {
+SceneJS.math.Plane3 = function (normal, offset, normalize) {
     this.normal = [0.0, 0.0, 1.0 ];
 
     this.offset = 0.0;
@@ -4143,16 +6179,16 @@ var SceneJS_math_Plane3 = function (normal, offset, normalize) {
 };
 
 /** @private */
-var SceneJS_math_MAX_DOUBLE = Number.POSITIVE_INFINITY;
+SceneJS.math.MAX_DOUBLE = Number.POSITIVE_INFINITY;
 /** @private */
-var SceneJS_math_MIN_DOUBLE = Number.NEGATIVE_INFINITY;
+SceneJS.math.MIN_DOUBLE = Number.NEGATIVE_INFINITY;
 
 /** @private
  *
  */
-var SceneJS_math_Box3 = function(min, max) {
-    this.min = min || [ SceneJS_math_MAX_DOUBLE,SceneJS_math_MAX_DOUBLE,SceneJS_math_MAX_DOUBLE ];
-    this.max = max || [ SceneJS_math_MIN_DOUBLE,SceneJS_math_MIN_DOUBLE,SceneJS_math_MIN_DOUBLE ];
+SceneJS.math.Box3 = function(min, max) {
+    this.min = min || [ SceneJS.math.MAX_DOUBLE,SceneJS.math.MAX_DOUBLE,SceneJS.math.MAX_DOUBLE ];
+    this.max = max || [ SceneJS.math.MIN_DOUBLE,SceneJS.math.MIN_DOUBLE,SceneJS.math.MIN_DOUBLE ];
 
     /** @private */
     this.init = function(min, max) {
@@ -4264,7 +6300,7 @@ var SceneJS_math_Box3 = function(min, max) {
  * @param min
  * @param max
  */
-var SceneJS_math_AxisBox3 = function(min, max) {
+SceneJS.math.AxisBox3 = function(min, max) {
     var min0 = min[0], min1 = min[1], min2 = min[2];
     var max0 = max[0], max1 = max[1], max2 = max[2];
 
@@ -4282,7 +6318,7 @@ var SceneJS_math_AxisBox3 = function(min, max) {
 
     /** @private */
     this.toBox3 = function() {
-        var box = new SceneJS_math_Box3();
+        var box = new SceneJS.math.Box3();
         for (var i = 0; i < 8; ++i) {
             var v = this.verts[i];
             for (var j = 0; j < 3; ++j) {
@@ -4302,7 +6338,7 @@ var SceneJS_math_AxisBox3 = function(min, max) {
  * @param center
  * @param radius
  */
-var SceneJS_math_Sphere3 = function(center, radius) {
+SceneJS.math.Sphere3 = function(center, radius) {
     this.center = [center[0], center[1], center[2] ];
     this.radius = radius;
 
@@ -4326,43 +6362,43 @@ var SceneJS_math_Sphere3 = function(center, radius) {
 /** Creates billboard matrix from given view matrix
  * @private
  */
-var SceneJS_math_billboardMat = function(viewMatrix) {
+SceneJS.math.billboardMat = function(viewMatrix) {
     var rotVec = [
-        SceneJS_math_getColMat4(viewMatrix, 0),
-        SceneJS_math_getColMat4(viewMatrix, 1),
-        SceneJS_math_getColMat4(viewMatrix, 2)
+        SceneJS.math.getColMat4(viewMatrix, 0),
+        SceneJS.math.getColMat4(viewMatrix, 1),
+        SceneJS.math.getColMat4(viewMatrix, 2)
     ];
 
     var scaleVec = [
-        SceneJS_math_lenVec4(rotVec[0]),
-        SceneJS_math_lenVec4(rotVec[1]),
-        SceneJS_math_lenVec4(rotVec[2])
+        SceneJS.math.lenVec4(rotVec[0]),
+        SceneJS.math.lenVec4(rotVec[1]),
+        SceneJS.math.lenVec4(rotVec[2])
     ];
 
-    var scaleVecRcp = SceneJS_math_mat4();
-    SceneJS_math_rcpVec3(scaleVec, scaleVecRcp);
-    var sMat = SceneJS_math_scalingMat4v(scaleVec);
-    //var sMatInv = SceneJS_math_scalingMat4v(scaleVecRcp);
+    var scaleVecRcp = SceneJS.math.mat4();
+    SceneJS.math.rcpVec3(scaleVec, scaleVecRcp);
+    var sMat = SceneJS.math.scalingMat4v(scaleVec);
+    //var sMatInv = SceneJS.math.scalingMat4v(scaleVecRcp);
 
-    SceneJS_math_mulVec4Scalar(rotVec[0], scaleVecRcp[0]);
-    SceneJS_math_mulVec4Scalar(rotVec[1], scaleVecRcp[1]);
-    SceneJS_math_mulVec4Scalar(rotVec[2], scaleVecRcp[2]);
+    SceneJS.math.mulVec4Scalar(rotVec[0], scaleVecRcp[0]);
+    SceneJS.math.mulVec4Scalar(rotVec[1], scaleVecRcp[1]);
+    SceneJS.math.mulVec4Scalar(rotVec[2], scaleVecRcp[2]);
 
-    var rotMatInverse = SceneJS_math_identityMat4();
+    var rotMatInverse = SceneJS.math.identityMat4();
 
-    SceneJS_math_setRowMat4(rotMatInverse, 0, rotVec[0]);
-    SceneJS_math_setRowMat4(rotMatInverse, 1, rotVec[1]);
-    SceneJS_math_setRowMat4(rotMatInverse, 2, rotVec[2]);
+    SceneJS.math.setRowMat4(rotMatInverse, 0, rotVec[0]);
+    SceneJS.math.setRowMat4(rotMatInverse, 1, rotVec[1]);
+    SceneJS.math.setRowMat4(rotMatInverse, 2, rotVec[2]);
 
     //return rotMatInverse;
-    //return SceneJS_math_mulMat4(sMatInv, SceneJS_math_mulMat4(rotMatInverse, sMat));
-    return SceneJS_math_mulMat4(rotMatInverse, sMat);
-    // return SceneJS_math_mulMat4(sMat, SceneJS_math_mulMat4(rotMatInverse, sMat));
-    //return SceneJS_math_mulMat4(sMatInv, SceneJS_math_mulMat4(rotMatInverse, sMat));
+    //return SceneJS.math.mulMat4(sMatInv, SceneJS.math.mulMat4(rotMatInverse, sMat));
+    return SceneJS.math.mulMat4(rotMatInverse, sMat);
+    // return SceneJS.math.mulMat4(sMat, SceneJS.math.mulMat4(rotMatInverse, sMat));
+    //return SceneJS.math.mulMat4(sMatInv, SceneJS.math.mulMat4(rotMatInverse, sMat));
 };
 
 /** @private */
-var SceneJS_math_FrustumPlane = function(nx, ny, nz, offset) {
+SceneJS.math.FrustumPlane = function(nx, ny, nz, offset) {
     var s = 1.0 / Math.sqrt(nx * nx + ny * ny + nz * nz);
     this.normal = [nx * s, ny * s, nz * s];
     this.offset = offset * s;
@@ -4373,16 +6409,16 @@ var SceneJS_math_FrustumPlane = function(nx, ny, nz, offset) {
 };
 
 /** @private */
-var SceneJS_math_OUTSIDE_FRUSTUM = 3;
+SceneJS.math.OUTSIDE_FRUSTUM = 3;
 /** @private */
-var SceneJS_math_INTERSECT_FRUSTUM = 4;
+SceneJS.math.INTERSECT_FRUSTUM = 4;
 /** @private */
-var SceneJS_math_INSIDE_FRUSTUM = 5;
+SceneJS.math.INSIDE_FRUSTUM = 5;
 
 /** @private */
-var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
-    var m = SceneJS_math_mat4();
-    SceneJS_math_mulMat4(projectionMatrix, viewMatrix, m);
+SceneJS.math.Frustum = function(viewMatrix, projectionMatrix, viewport) {
+    var m = SceneJS.math.mat4();
+    SceneJS.math.mulMat4(projectionMatrix, viewMatrix, m);
 
     // cache m indexes
     var m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3];
@@ -4392,55 +6428,55 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
 
     //var q = [ m[3], m[7], m[11] ]; just reuse m indexes instead of making new var
     var planes = [
-        new SceneJS_math_FrustumPlane(m3 - m0, m7 - m4, m11 - m8, m15 - m12),
-        new SceneJS_math_FrustumPlane(m3 + m0, m7 + m4, m11 + m8, m15 + m12),
-        new SceneJS_math_FrustumPlane(m3 - m1, m7 - m5, m11 - m9, m15 - m13),
-        new SceneJS_math_FrustumPlane(m3 + m1, m7 + m5, m11 + m9, m15 + m13),
-        new SceneJS_math_FrustumPlane(m3 - m2, m7 - m6, m11 - m10, m15 - m14),
-        new SceneJS_math_FrustumPlane(m3 + m2, m7 + m6, m11 + m10, m15 + m14)
+        new SceneJS.math.FrustumPlane(m3 - m0, m7 - m4, m11 - m8, m15 - m12),
+        new SceneJS.math.FrustumPlane(m3 + m0, m7 + m4, m11 + m8, m15 + m12),
+        new SceneJS.math.FrustumPlane(m3 - m1, m7 - m5, m11 - m9, m15 - m13),
+        new SceneJS.math.FrustumPlane(m3 + m1, m7 + m5, m11 + m9, m15 + m13),
+        new SceneJS.math.FrustumPlane(m3 - m2, m7 - m6, m11 - m10, m15 - m14),
+        new SceneJS.math.FrustumPlane(m3 + m2, m7 + m6, m11 + m10, m15 + m14)
     ];
 
     /* Resources for LOD
      */
     var rotVec = [
-        SceneJS_math_getColMat4(viewMatrix, 0),
-        SceneJS_math_getColMat4(viewMatrix, 1),
-        SceneJS_math_getColMat4(viewMatrix, 2)
+        SceneJS.math.getColMat4(viewMatrix, 0),
+        SceneJS.math.getColMat4(viewMatrix, 1),
+        SceneJS.math.getColMat4(viewMatrix, 2)
     ];
 
     var scaleVec = [
-        SceneJS_math_lenVec4(rotVec[0]),
-        SceneJS_math_lenVec4(rotVec[1]),
-        SceneJS_math_lenVec4(rotVec[2])
+        SceneJS.math.lenVec4(rotVec[0]),
+        SceneJS.math.lenVec4(rotVec[1]),
+        SceneJS.math.lenVec4(rotVec[2])
     ];
 
-    var scaleVecRcp = SceneJS_math_rcpVec3(scaleVec);
-    var sMat = SceneJS_math_scalingMat4v(scaleVec);
-    var sMatInv = SceneJS_math_scalingMat4v(scaleVecRcp);
+    var scaleVecRcp = SceneJS.math.rcpVec3(scaleVec);
+    var sMat = SceneJS.math.scalingMat4v(scaleVec);
+    var sMatInv = SceneJS.math.scalingMat4v(scaleVecRcp);
 
-    SceneJS_math_mulVec4Scalar(rotVec[0], scaleVecRcp[0]);
-    SceneJS_math_mulVec4Scalar(rotVec[1], scaleVecRcp[1]);
-    SceneJS_math_mulVec4Scalar(rotVec[2], scaleVecRcp[2]);
+    SceneJS.math.mulVec4Scalar(rotVec[0], scaleVecRcp[0]);
+    SceneJS.math.mulVec4Scalar(rotVec[1], scaleVecRcp[1]);
+    SceneJS.math.mulVec4Scalar(rotVec[2], scaleVecRcp[2]);
 
-    var rotMatInverse = SceneJS_math_identityMat4();
+    var rotMatInverse = SceneJS.math.identityMat4();
 
-    SceneJS_math_setRowMat4(rotMatInverse, 0, rotVec[0]);
-    SceneJS_math_setRowMat4(rotMatInverse, 1, rotVec[1]);
-    SceneJS_math_setRowMat4(rotMatInverse, 2, rotVec[2]);
+    SceneJS.math.setRowMat4(rotMatInverse, 0, rotVec[0]);
+    SceneJS.math.setRowMat4(rotMatInverse, 1, rotVec[1]);
+    SceneJS.math.setRowMat4(rotMatInverse, 2, rotVec[2]);
 
     if (!this.matrix) {
-        this.matrix = SceneJS_math_mat4();
+        this.matrix = SceneJS.math.mat4();
     }
-    SceneJS_math_mulMat4(projectionMatrix, viewMatrix, this.matrix);
+    SceneJS.math.mulMat4(projectionMatrix, viewMatrix, this.matrix);
     if (!this.billboardMatrix) {
-        this.billboardMatrix = SceneJS_math_mat4();
+        this.billboardMatrix = SceneJS.math.mat4();
     }
-    SceneJS_math_mulMat4(sMatInv, SceneJS_math_mulMat4(rotMatInverse, sMat), this.billboardMatrix);
+    SceneJS.math.mulMat4(sMatInv, SceneJS.math.mulMat4(rotMatInverse, sMat), this.billboardMatrix);
     this.viewport = viewport.slice(0, 4);
 
     /** @private */
     this.textAxisBoxIntersection = function(box) {
-        var ret = SceneJS_math_INSIDE_FRUSTUM;
+        var ret = SceneJS.math.INSIDE_FRUSTUM;
         var bminmax = [ box.min, box.max ];
         var plane = null;
 
@@ -4450,13 +6486,13 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
                  (plane.normal[1] * bminmax[plane.testVertex[1]][1]) +
                  (plane.normal[2] * bminmax[plane.testVertex[2]][2]) +
                  (plane.offset)) < 0.0) {
-                return SceneJS_math_OUTSIDE_FRUSTUM;
+                return SceneJS.math.OUTSIDE_FRUSTUM;
             }
             if (((plane.normal[0] * bminmax[1 - plane.testVertex[0]][0]) +
                  (plane.normal[1] * bminmax[1 - plane.testVertex[1]][1]) +
                  (plane.normal[2] * bminmax[1 - plane.testVertex[2]][2]) +
                  (plane.offset)) < 0.0) {
-                ret = SceneJS_math_INTERSECT_FRUSTUM;
+                ret = SceneJS.math.INTERSECT_FRUSTUM;
             }
         }
         return ret;
@@ -4464,10 +6500,10 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
 
     /** @private */
     this.getProjectedSize = function(box) {
-        var diagVec = SceneJS_math_mat4();
-        SceneJS_math_subVec3(box.max, box.min, diagVec);
+        var diagVec = SceneJS.math.mat4();
+        SceneJS.math.subVec3(box.max, box.min, diagVec);
 
-        var diagSize = SceneJS_math_lenVec3(diagVec);
+        var diagSize = SceneJS.math.lenVec3(diagVec);
 
         var size = Math.abs(diagSize);
 
@@ -4481,20 +6517,20 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
         var p1 = [ -halfSize, 0.0, 0.0, 1.0 ];
         var p2 = [  halfSize, 0.0, 0.0, 1.0 ];
 
-        p1 = SceneJS_math_mulMat4v4(this.billboardMatrix, p1);
-        p1 = SceneJS_math_addVec4(p1, p0);
-        p1 = SceneJS_math_projectVec4(SceneJS_math_mulMat4v4(this.matrix, p1));
+        p1 = SceneJS.math.mulMat4v4(this.billboardMatrix, p1);
+        p1 = SceneJS.math.addVec4(p1, p0);
+        p1 = SceneJS.math.projectVec4(SceneJS.math.mulMat4v4(this.matrix, p1));
 
-        p2 = SceneJS_math_mulMat4v4(this.billboardMatrix, p2);
-        p2 = SceneJS_math_addVec4(p2, p0);
-        p2 = SceneJS_math_projectVec4(SceneJS_math_mulMat4v4(this.matrix, p2));
+        p2 = SceneJS.math.mulMat4v4(this.billboardMatrix, p2);
+        p2 = SceneJS.math.addVec4(p2, p0);
+        p2 = SceneJS.math.projectVec4(SceneJS.math.mulMat4v4(this.matrix, p2));
 
         return viewport[2] * Math.abs(p2[0] - p1[0]);
     };
 
 
     this.getProjectedState = function(modelCoords) {
-        var viewCoords = SceneJS_math_transformPoints3(this.matrix, modelCoords);
+        var viewCoords = SceneJS.math.transformPoints3(this.matrix, modelCoords);
 
         //var canvasBox = {
         //    min: [10000000, 10000000 ],
@@ -4508,7 +6544,7 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
 
         var arrLen = viewCoords.length;
         for (var i = 0; i < arrLen; ++i) {
-            v = SceneJS_math_projectVec4(viewCoords[i]);
+            v = SceneJS.math.projectVec4(viewCoords[i]);
             x = v[0];
             y = v[1];
 
@@ -4557,11 +6593,11 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
         canvasBoxMax0 = (canvasBoxMax0 * (viewport2 + 15));
         canvasBoxMax1 = (canvasBoxMax1 * (viewport3 + 15));
 
-        var diagCanvasBoxVec = SceneJS_math_mat4();
-        SceneJS_math_subVec2([canvasBoxMax0, canvasBoxMax1],
+        var diagCanvasBoxVec = SceneJS.math.mat4();
+        SceneJS.math.subVec2([canvasBoxMax0, canvasBoxMax1],
                 [canvasBoxMin0, canvasBoxMin1],
                 diagCanvasBoxVec);
-        var diagCanvasBoxSize = SceneJS_math_lenVec2(diagCanvasBoxVec);
+        var diagCanvasBoxSize = SceneJS.math.lenVec2(diagCanvasBoxVec);
 
         if (canvasBoxMin0 < 0) {
             canvasBoxMin0 = 0;
@@ -4586,11 +6622,11 @@ var SceneJS_math_Frustum = function(viewMatrix, projectionMatrix, viewport) {
     };
 };
 
-var SceneJS_math_identityQuaternion = function() {
+SceneJS.math.identityQuaternion = function() {
     return [ 0.0, 0.0, 0.0, 1.0 ];
 };
 
-var SceneJS_math_angleAxisQuaternion = function(x, y, z, degrees) {
+SceneJS.math.angleAxisQuaternion = function(x, y, z, degrees) {
     var angleRad = (degrees / 180.0) * Math.PI;
     var halfAngle = angleRad / 2.0;
     var fsin = Math.sin(halfAngle);
@@ -4602,7 +6638,7 @@ var SceneJS_math_angleAxisQuaternion = function(x, y, z, degrees) {
     ];
 };
 
-var SceneJS_math_mulQuaternions = function(p, q) {
+SceneJS.math.mulQuaternions = function(p, q) {
     var p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
     var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
     return [
@@ -4613,7 +6649,7 @@ var SceneJS_math_mulQuaternions = function(p, q) {
     ];
 };
 
-var SceneJS_math_newMat4FromQuaternion = function(q) {
+SceneJS.math.newMat4FromQuaternion = function(q) {
     var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
     var tx = 2.0 * q0;
     var ty = 2.0 * q1;
@@ -4627,22 +6663,22 @@ var SceneJS_math_newMat4FromQuaternion = function(q) {
     var tyy = ty * q1;
     var tyz = tz * q1;
     var tzz = tz * q2;
-    var m = SceneJS_math_identityMat4();
-    SceneJS_math_setCellMat4(m, 0, 0, 1.0 - (tyy + tzz));
-    SceneJS_math_setCellMat4(m, 0, 1, txy - twz);
-    SceneJS_math_setCellMat4(m, 0, 2, txz + twy);
-    SceneJS_math_setCellMat4(m, 1, 0, txy + twz);
-    SceneJS_math_setCellMat4(m, 1, 1, 1.0 - (txx + tzz));
-    SceneJS_math_setCellMat4(m, 1, 2, tyz - twx);
-    SceneJS_math_setCellMat4(m, 2, 0, txz - twy);
-    SceneJS_math_setCellMat4(m, 2, 1, tyz + twx);
-    SceneJS_math_setCellMat4(m, 2, 2, 1.0 - (txx + tyy));
+    var m = SceneJS.math.identityMat4();
+    SceneJS.math.setCellMat4(m, 0, 0, 1.0 - (tyy + tzz));
+    SceneJS.math.setCellMat4(m, 0, 1, txy - twz);
+    SceneJS.math.setCellMat4(m, 0, 2, txz + twy);
+    SceneJS.math.setCellMat4(m, 1, 0, txy + twz);
+    SceneJS.math.setCellMat4(m, 1, 1, 1.0 - (txx + tzz));
+    SceneJS.math.setCellMat4(m, 1, 2, tyz - twx);
+    SceneJS.math.setCellMat4(m, 2, 0, txz - twy);
+    SceneJS.math.setCellMat4(m, 2, 1, tyz + twx);
+    SceneJS.math.setCellMat4(m, 2, 2, 1.0 - (txx + tyy));
     return m;
 };
 
 
-//var SceneJS_math_slerp(t, q1, q2) {
-//    var result = SceneJS_math_identityQuaternion();
+//SceneJS.math.slerp(t, q1, q2) {
+//    var result = SceneJS.math.identityQuaternion();
 //    var cosHalfAngle = q1[3] * q2[3] + q1[0] * q2[0] + q1[1] * q2[1] + q1[2] * q2[2];
 //    if (Math.abs(cosHalfAngle) >= 1) {
 //        return [ q1[0],q1[1], q1[2], q1[3] ];
@@ -4669,8 +6705,8 @@ var SceneJS_math_newMat4FromQuaternion = function(q) {
 //    }
 //}
 
-var SceneJS_math_slerp = function(t, q1, q2) {
-    //var result = SceneJS_math_identityQuaternion();
+SceneJS.math.slerp = function(t, q1, q2) {
+    //var result = SceneJS.math.identityQuaternion();
     var q13 = q1[3] * 0.0174532925;
     var q23 = q2[3] * 0.0174532925;
     var cosHalfAngle = q13 * q23 + q1[0] * q2[0] + q1[1] * q2[1] + q1[2] * q2[2];
@@ -4699,17 +6735,17 @@ var SceneJS_math_slerp = function(t, q1, q2) {
     }
 };
 
-var SceneJS_math_normalizeQuaternion = function(q) {
-    var len = SceneJS_math_lenVec4([q[0], q[1], q[2], q[3]]);
+SceneJS.math.normalizeQuaternion = function(q) {
+    var len = SceneJS.math.lenVec4([q[0], q[1], q[2], q[3]]);
     return [ q[0] / len, q[1] / len, q[2] / len, q[3] / len ];
 };
 
-var SceneJS_math_conjugateQuaternion = function(q) {
+SceneJS.math.conjugateQuaternion = function(q) {
     return[-q[0],-q[1],-q[2],q[3]];
 };
 
-var SceneJS_math_angleAxisFromQuaternion = function(q) {
-    q = SceneJS_math_normalizeQuaternion(q);
+SceneJS.math.angleAxisFromQuaternion = function(q) {
+    q = SceneJS.math.normalizeQuaternion(q);
     var q3 = q[3];
     var angle = 2 * Math.acos(q3);
     var s = Math.sqrt(1 - q3 * q3);
@@ -4729,6 +6765,7 @@ var SceneJS_math_angleAxisFromQuaternion = function(q) {
         };
     }
 };
+
 /** Maps SceneJS node parameter names to WebGL enum names
  * @private
  */
@@ -5567,6 +7604,7 @@ var SceneJS_PickBufferOLD = function (cfg) {
 
     this.init(cfg.canvas.gl);
 };
+
 /**
  * Backend that tracks statistics on loading states of nodes during scene traversal.
  *
@@ -5747,6 +7785,7 @@ var SceneJS_sceneStatusModule = new (function () {
     }
 })();
 
+
 /**
  * Manages scene node event listeners
  * @private
@@ -5844,6 +7883,7 @@ var SceneJS_nodeEventsModule = new (function () {
 
 })();
 
+
 /**
  * @class Holds state for one or more {@link SceneJS.Node}s.
  *
@@ -5886,7 +7926,8 @@ var SceneJS_Core = function(type) {
      * Count of {@link SceneJS.Node} instances this core holds state for
      */
     this.useCount = 0;
-};/**
+};
+/**
  * @class Manages creation, recycle and destruction of {@link SceneJS_Core} instances
  * @private
  */
@@ -6058,6 +8099,7 @@ SceneJS_CoreFactory.prototype.webglRestored = function () {
         }
     }
 };
+
 /**
  * @class The basic scene graph node type
  */
@@ -7453,14 +9495,7 @@ SceneJS.Node.prototype._doDestroy = function () {
     }
 
     return this;
-};SceneJS_PubSubProxy = function (scene, proxy) {
-    this.scene = scene;
-    this.proxy = proxy;
-
 };
-
-
-
 /**
  * @class Manages creation, recycle and destruction of {@link SceneJS.Node} instances
  * @private
@@ -7608,9 +9643,10 @@ SceneJS_NodeFactory.prototype._loadScript = function (url, error) {
 SceneJS_NodeFactory.prototype.putNode = function (node) {
     this.nodes.removeItem(node.id);
 };
+
 (function () {
 
-    var defaultMatrix = SceneJS_math_perspectiveMatrix4(
+    var defaultMatrix = SceneJS.math.perspectiveMatrix4(
         45, // fovy
         1, // aspect
         0.1, // near
@@ -7686,7 +9722,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         } else {
             var type = optics.type || core.optics.type;
             if (type == "ortho") {
-                core.optics = SceneJS._applyIf(SceneJS_math_ORTHO_OBJ, {
+                core.optics = SceneJS._applyIf(SceneJS.math.ORTHO_OBJ, {
                     type:type,
                     left:optics.left,
                     bottom:optics.bottom,
@@ -7732,7 +9768,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
     SceneJS.Camera.prototype._rebuild = function () {
         var optics = this._core.optics;
         if (optics.type == "ortho") {
-            this._core.matrix = SceneJS_math_orthoMat4c(
+            this._core.matrix = SceneJS.math.orthoMat4c(
                 optics.left,
                 optics.right,
                 optics.bottom,
@@ -7741,7 +9777,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
                 optics.far);
 
         } else if (optics.type == "frustum") {
-            this._core.matrix = SceneJS_math_frustumMatrix4(
+            this._core.matrix = SceneJS.math.frustumMatrix4(
                 optics.left,
                 optics.right,
                 optics.bottom,
@@ -7750,7 +9786,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
                 optics.far);
 
         } else if (optics.type == "perspective") {
-            this._core.matrix = SceneJS_math_perspectiveMatrix4(
+            this._core.matrix = SceneJS.math.perspectiveMatrix4(
                 optics.fovy * Math.PI / 180.0,
                 optics.aspect,
                 optics.near,
@@ -7792,7 +9828,9 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         // Stop publishing matrix on each tick
         this.getScene().off(this._tick);
     };
-})();(function() {
+})();
+
+(function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Clips} nodes
@@ -7889,7 +9927,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
     };
 
 
-})();(function () {
+})();
+(function () {
 
     // The default state core singleton for {@link SceneJS.Enable} nodes
     var defaultCore = {
@@ -7942,7 +9981,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         this._engine.display.enable = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();(function() {
+})();
+(function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Flags} nodes
@@ -8257,7 +10297,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         this._engine.display.flags = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();new (function() {
+})();
+new (function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Framebuf} nodes
@@ -8457,7 +10498,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
     };
 
 
-})();new (function () {
+})();
+new (function () {
 
     var coreStack = [];
     var stackLen = 0;
@@ -8912,10 +10954,10 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
             v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
             v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
 
-            v2 = SceneJS_math_subVec4(v2, v1, [0, 0, 0, 0]);
-            v3 = SceneJS_math_subVec4(v3, v1, [0, 0, 0, 0]);
+            v2 = SceneJS.math.subVec4(v2, v1, [0, 0, 0, 0]);
+            v3 = SceneJS.math.subVec4(v3, v1, [0, 0, 0, 0]);
 
-            var n = SceneJS_math_normalizeVec4(SceneJS_math_cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
+            var n = SceneJS.math.normalizeVec4(SceneJS.math.cross3Vec4(v2, v3, [0, 0, 0, 0]), [0, 0, 0, 0]);
 
             if (!nvecs[j0]) nvecs[j0] = [];
             if (!nvecs[j1]) nvecs[j1] = [];
@@ -9054,12 +11096,12 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         }
 
         this._boundary = {
-            xmin:SceneJS_math_MAX_DOUBLE,
-            ymin:SceneJS_math_MAX_DOUBLE,
-            zmin:SceneJS_math_MAX_DOUBLE,
-            xmax:SceneJS_math_MIN_DOUBLE,
-            ymax:SceneJS_math_MIN_DOUBLE,
-            zmax:SceneJS_math_MIN_DOUBLE
+            xmin:SceneJS.math.MAX_DOUBLE,
+            ymin:SceneJS.math.MAX_DOUBLE,
+            zmin:SceneJS.math.MAX_DOUBLE,
+            xmax:SceneJS.math.MIN_DOUBLE,
+            ymax:SceneJS.math.MIN_DOUBLE,
+            zmax:SceneJS.math.MIN_DOUBLE
         };
 
         var x, y, z;
@@ -9216,7 +11258,9 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
     };
 
 })
-    ();(function() {
+    ();
+
+(function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Layer} nodes
@@ -9299,6 +11343,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
 
 })();
 
+
 /**
  * @class Scene graph node which assigns nodes in its subgraph to a library
  * @extends SceneJS.Node
@@ -9306,6 +11351,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
 SceneJS.Library = SceneJS_NodeFactory.createNodeType("library");
 SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
 };
+
 
 (function () {
 
@@ -9572,11 +11618,12 @@ SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
         this._engine.display.lights = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();(function () {
+})();
+(function () {
 
-    var defaultMatrix = SceneJS_math_lookAtMat4c(0, 0, 10, 0, 0, 0, 0, 1, 0);
+    var defaultMatrix = SceneJS.math.lookAtMat4c(0, 0, 10, 0, 0, 0, 0, 1, 0);
     var defaultMat = new Float32Array(defaultMatrix);
-    var normalMat = SceneJS_math_transposeMat4(SceneJS_math_inverseMat4(defaultMat, SceneJS_math_mat4()));
+    var normalMat = SceneJS.math.transposeMat4(SceneJS.math.inverseMat4(defaultMat, SceneJS.math.mat4()));
     var defaultNormalMat = new Float32Array(normalMat);
 
     /**
@@ -9589,7 +11636,7 @@ SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
         mat:defaultMat,
         normalMatrix:normalMat,
         normalMat:defaultNormalMat,
-        lookAt:SceneJS_math_LOOKAT_ARRAYS
+        lookAt:SceneJS.math.LOOKAT_ARRAYS
     };
 
     var coreStack = [];
@@ -9646,7 +11693,7 @@ SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
 
             this._core.rebuild = function () {
 
-                core.matrix = SceneJS_math_lookAtMat4c(
+                core.matrix = SceneJS.math.lookAtMat4c(
                     core.eyeX, core.eyeY, core.eyeZ,
                     core.lookX, core.lookY, core.lookZ,
                     core.upX, core.upY, core.upZ);
@@ -9660,11 +11707,11 @@ SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
                 if (!core.mat) { // Lazy-create arrays
                     core.mat = new Float32Array(core.matrix);
                     core.normalMat = new Float32Array(
-                        SceneJS_math_transposeMat4(SceneJS_math_inverseMat4(core.matrix, SceneJS_math_mat4())));
+                        SceneJS.math.transposeMat4(SceneJS.math.inverseMat4(core.matrix, SceneJS.math.mat4())));
 
                 } else { // Insert into arrays
                     core.mat.set(core.matrix);
-                    core.normalMat.set(SceneJS_math_transposeMat4(SceneJS_math_inverseMat4(core.matrix, SceneJS_math_mat4())));
+                    core.normalMat.set(SceneJS.math.transposeMat4(SceneJS.math.inverseMat4(core.matrix, SceneJS.math.mat4())));
                 }
 
                 self.publish("matrix", core.matrix);
@@ -9979,7 +12026,9 @@ SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
         this.getScene().off(this._tick);
     };
 
-})();/*
+})();
+
+/*
 
  TODO: material system from virtualworldframework:
 
@@ -10133,7 +12182,8 @@ new (function () {
         this._engine.display.material = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();new (function () {
+})();
+new (function () {
 
     /**
      * The default state core singleton for {@link SceneJS.MorphGeometry} nodes
@@ -10524,7 +12574,8 @@ new (function () {
         }
     };
 
-})();(function () {
+})();
+(function () {
 
     /**
      * The default state core singleton for {@link SceneJS.Name} nodes
@@ -10583,7 +12634,8 @@ new (function () {
         this._compileNodes(ctx);
         this._engine.display.name = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
-})();new (function() {
+})();
+new (function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Renderer} nodes
@@ -11362,7 +13414,8 @@ new (function () {
         this._compileNodes(ctx);
         //this._engine.display.renderer = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
-})();(function () {
+})();
+(function () {
 
     var lookup = {
         less:"LESS",
@@ -11503,7 +13556,8 @@ new (function () {
         this._engine.display.depthbuf = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();(function () {
+})();
+(function () {
 
     // The default state core singleton for {@link SceneJS.ColorBuf} nodes
     var defaultCore = {
@@ -11566,7 +13620,8 @@ new (function () {
         this._engine.display.colorbuf = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();(function () {
+})();
+(function () {
 
     // The default state core singleton for {@link SceneJS.View} nodes
     var defaultCore = {
@@ -11639,7 +13694,8 @@ new (function () {
         this._engine.display.view = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();/**
+})();
+/**
  * @class The root node of a scenegraph
  * @extends SceneJS.Node
  *
@@ -11880,6 +13936,7 @@ SceneJS.Scene.prototype.getStatus = function () {
     }
     return SceneJS._shallowClone(sceneStatus);
 };
+
 new (function() {
 
     /**
@@ -12073,7 +14130,8 @@ new (function() {
         dirty = true;
     };
 
-})();new (function() {
+})();
+new (function() {
 
     /**
      * The default state core singleton for {@link SceneJS.ShaderParams} nodes
@@ -12169,7 +14227,8 @@ new (function() {
         dirty = true;
     };
 
-})();(function () {
+})();
+(function () {
 
     // The default state core singleton for {@link SceneJS.Line} nodes
     var defaultCore = {
@@ -12232,7 +14291,8 @@ new (function() {
         this._engine.display.style = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-})();(function() {
+})();
+(function() {
 
     /**
      * The default state core singleton for {@link SceneJS.Tag} nodes
@@ -12291,7 +14351,8 @@ new (function() {
         this._compileNodes(ctx);
         this._engine.display.tag = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
-})();/**
+})();
+/**
  * @class Scene graph node which defines textures to apply to the objects in its subgraph
  * @extends SceneJS.Node
  */
@@ -12688,7 +14749,7 @@ new (function () {
             if (translate.y != undefined) {
                 layer.translate.y = translate.y;
             }
-            matrix = SceneJS_math_translationMat4v([ translate.x || 0, translate.y || 0, 0]);
+            matrix = SceneJS.math.translationMat4v([ translate.x || 0, translate.y || 0, 0]);
         }
 
         if (cfg.scale) {
@@ -12699,8 +14760,8 @@ new (function () {
             if (scale.y != undefined) {
                 layer.scale.y = scale.y;
             }
-            t = SceneJS_math_scalingMat4v([ scale.x || 1, scale.y || 1, 1]);
-            matrix = matrix ? SceneJS_math_mulMat4(matrix, t) : t;
+            t = SceneJS.math.scalingMat4v([ scale.x || 1, scale.y || 1, 1]);
+            matrix = matrix ? SceneJS.math.mulMat4(matrix, t) : t;
         }
 
         if (cfg.rotate) {
@@ -12708,8 +14769,8 @@ new (function () {
             if (rotate.z != undefined) {
                 layer.rotate.z = rotate.z || 0;
             }
-            t = SceneJS_math_rotationMat4v(rotate.z * 0.0174532925, [0, 0, 1]);
-            matrix = matrix ? SceneJS_math_mulMat4(matrix, t) : t;
+            t = SceneJS.math.rotationMat4v(rotate.z * 0.0174532925, [0, 0, 1]);
+            matrix = matrix ? SceneJS.math.mulMat4(matrix, t) : t;
         }
 
         if (matrix) {
@@ -12779,7 +14840,9 @@ new (function () {
         }
     };
 
-})();/**
+})();
+
+/**
  * @class Scene graph node which defines the modelling transform to apply to the objects in its subgraph
  * @extends SceneJS.Node
  */
@@ -12821,7 +14884,7 @@ SceneJS.XForm.prototype.getWorldMatrix = function() {
 
 SceneJS.XForm.prototype.setElements = function (elements) {
 
-    elements = elements || SceneJS_math_identityMat4();
+    elements = elements || SceneJS.math.identityMat4();
 
     if (elements.length != 16) {
         throw SceneJS_error.fatalError(
@@ -12843,8 +14906,8 @@ SceneJS.XForm.prototype.setElements = function (elements) {
 
 //    core.mat.set(core.matrix);
 //    core.normalMat.set(
-//        SceneJS_math_transposeMat4(
-//            SceneJS_math_inverseMat4(core.matrix, SceneJS_math_mat4())));
+//        SceneJS.math.transposeMat4(
+//            SceneJS.math.inverseMat4(core.matrix, SceneJS.math.mat4())));
 
 
     core.setDirty();
@@ -12859,6 +14922,7 @@ SceneJS.XForm.prototype._compile = function (ctx) {
     this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
+
 
 /**
  * @class Scene graph node which defines a modelling transform matrix to apply to the objects in its subgraph
@@ -12905,7 +14969,7 @@ SceneJS.Matrix.prototype.getWorldMatrix = function() {
  */
 SceneJS.Matrix.prototype.setMatrix = function(elements) {
 
-    elements = elements || SceneJS_math_identityMat4();
+    elements = elements || SceneJS.math.identityMat4();
 
     if (elements.length != 16) {
         throw SceneJS_error.fatalError(
@@ -12944,6 +15008,7 @@ SceneJS.Matrix.prototype._compile = function(ctx) {
     this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
+
 /**
  * @class Scene graph node which defines a rotation modelling transform to apply to the objects in its subgraph
  * @extends SceneJS.Node
@@ -12969,7 +15034,7 @@ SceneJS.Rotate.prototype._init = function(params) {
         var core = this._core;
 
         this._core.buildMatrix = function() {
-            core.matrix = SceneJS_math_rotationMat4v(core.angle * Math.PI / 180.0, [core.x, core.y, core.z]);
+            core.matrix = SceneJS.math.rotationMat4v(core.angle * Math.PI / 180.0, [core.x, core.y, core.z]);
         };
     }
 };
@@ -13092,6 +15157,7 @@ SceneJS.Rotate.prototype._compile = function(ctx) {
     this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
+
 /**
  * @class Scene graph node which defines a translation modelling transform to apply to the objects in its subgraph
  * @extends SceneJS.Node
@@ -13115,7 +15181,7 @@ SceneJS.Translate.prototype._init = function(params) {
         var core = this._core;
 
         this._core.buildMatrix = function() {
-            core.matrix = SceneJS_math_translationMat4v([core.x, core.y, core.z], core.matrix);
+            core.matrix = SceneJS.math.translationMat4v([core.x, core.y, core.z], core.matrix);
         };
     }
 };
@@ -13250,6 +15316,7 @@ SceneJS.Translate.prototype._compile = function(ctx) {
     this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
+
 /**
  * @class Scene graph node which defines a rotation modelling transform to apply to the objects in its subgraph
  * @extends SceneJS.Node
@@ -13272,8 +15339,8 @@ SceneJS.Scale.prototype._init = function (params) {
 
         var core = this._core;
 
-        this._core.buildMatrix = function () {
-            core.matrix = SceneJS_math_scalingMat4v([core.x, core.y, core.z]);
+        this._core.buildMatrix = function() {
+            core.matrix = SceneJS.math.scalingMat4v([core.x, core.y, core.z]);
         };
     }
 };
@@ -13402,6 +15469,7 @@ SceneJS.Scale.prototype._compile = function (ctx) {
     this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
+
 /**
  * Provides a model transform stack in front of the renderer.
  * Nodes peek push and pop to the stack, while the renderer peeks at
@@ -13410,13 +15478,13 @@ SceneJS.Scale.prototype._compile = function (ctx) {
  */
 var SceneJS_modelXFormStack = new (function () {
 
-    var defaultMatrix = SceneJS_math_identityMat4();
+    var defaultMatrix = SceneJS.math.identityMat4();
     var defaultMat = new Float32Array(defaultMatrix);
 
-    var defaultNormalMatrix = SceneJS_math_transposeMat4(
-        SceneJS_math_inverseMat4(
-            SceneJS_math_identityMat4(),
-            SceneJS_math_mat4()));
+    var defaultNormalMatrix = SceneJS.math.transposeMat4(
+        SceneJS.math.inverseMat4(
+            SceneJS.math.identityMat4(),
+            SceneJS.math.mat4()));
     var defaultNormalMat = new Float32Array(defaultNormalMatrix);
 
     var defaultCore = {
@@ -13486,12 +15554,12 @@ var SceneJS_modelXFormStack = new (function () {
         core.numCores = 0;          // Number of child transform cores
         core.matrixDirty = false;
 
-        core.matrix = SceneJS_math_identityMat4();
+        core.matrix = SceneJS.math.identityMat4();
 
         core.mat = new Float32Array(core.matrix);
         core.normalMat = new Float32Array(
-            SceneJS_math_transposeMat4(
-                SceneJS_math_inverseMat4(core.matrix, SceneJS_math_mat4())));
+            SceneJS.math.transposeMat4(
+                SceneJS.math.inverseMat4(core.matrix, SceneJS.math.mat4())));
 
         core.dirty = false;         // Does this subtree need matrices rebuilt
 
@@ -13549,13 +15617,13 @@ var SceneJS_modelXFormStack = new (function () {
                         }
                         parent.mat.set(parent.matrix);
                         parent.normalMat.set(
-                            SceneJS_math_transposeMat4(
-                                SceneJS_math_inverseMat4(parent.matrix, SceneJS_math_mat4())));
+                            SceneJS.math.transposeMat4(
+                                SceneJS.math.inverseMat4(parent.matrix, SceneJS.math.mat4())));
 
                         parent.matrixDirty = false;
                     }
 
-                    SceneJS_math_mulMat4(parent.matrix, matrix, matrix);
+                    SceneJS.math.mulMat4(parent.matrix, matrix, matrix);
 
                     if (!parent.dirty) {
                         //   break;
@@ -13576,15 +15644,15 @@ var SceneJS_modelXFormStack = new (function () {
             //                core.mat = new Float32Array(matrix);
             //
             //                core.normalMat = new Float32Array(
-            //                        SceneJS_math_transposeMat4(
-            //                                SceneJS_math_inverseMat4(matrix, SceneJS_math_mat4())));
+            //                        SceneJS.math.transposeMat4(
+            //                                SceneJS.math.inverseMat4(matrix, SceneJS.math.mat4())));
             //            } else {
 
             core.mat.set(matrix);
 
             core.normalMat.set(
-                SceneJS_math_transposeMat4(
-                    SceneJS_math_inverseMat4(matrix, SceneJS_math_mat4())));
+                SceneJS.math.transposeMat4(
+                    SceneJS.math.inverseMat4(matrix, SceneJS.math.mat4())));
             //}
 
            core.dirty = false;
@@ -13618,6 +15686,7 @@ var SceneJS_modelXFormStack = new (function () {
     };
 
 })();
+
 /**
  * Container for custom node types
  */
@@ -13670,6 +15739,7 @@ SceneJS.Types = new (function () {
         return !!SceneJS_NodeFactory.nodeTypes[typeName];
     };
 })();
+
 
 /**
  * @class Renders and picks a {@link SceneJS.Scene}
@@ -14525,18 +16595,18 @@ SceneJS_Display.prototype.pick = function (params) {
             var projMat = this._frameCtx.cameraMat;
             var viewMat = this._frameCtx.viewMat;
 
-            var pvMat = SceneJS_math_mulMat4(projMat, viewMat, []);
-            var pvMatInverse = SceneJS_math_inverseMat4(pvMat, []);
+            var pvMat = SceneJS.math.mulMat4(projMat, viewMat, []);
+            var pvMatInverse = SceneJS.math.inverseMat4(pvMat, []);
 
-            var world1 = SceneJS_math_transformVector4(pvMatInverse, [x, y, -1, 1]);
-            world1 = SceneJS_math_mulVec4Scalar(world1, 1 / world1[3]);
+            var world1 = SceneJS.math.transformVector4(pvMatInverse, [x, y, -1, 1]);
+            world1 = SceneJS.math.mulVec4Scalar(world1, 1 / world1[3]);
 
-            var world2 = SceneJS_math_transformVector4(pvMatInverse, [x, y, 1, 1]);
-            world2 = SceneJS_math_mulVec4Scalar(world2, 1 / world2[3]);
+            var world2 = SceneJS.math.transformVector4(pvMatInverse, [x, y, 1, 1]);
+            world2 = SceneJS.math.mulVec4Scalar(world2, 1 / world2[3]);
 
-            var dir = SceneJS_math_subVec3(world2, world1, []);
+            var dir = SceneJS.math.subVec3(world2, world1, []);
 
-            var vWorld = SceneJS_math_addVec3(world1, SceneJS_math_mulVec4Scalar(dir, screenZ, []), []);
+            var vWorld = SceneJS.math.addVec3(world1, SceneJS.math.mulVec4Scalar(dir, screenZ, []), []);
 
             hit.worldPos = vWorld;
         }
@@ -14548,7 +16618,7 @@ SceneJS_Display.prototype.pick = function (params) {
 SceneJS_Display.prototype._unpackDepth = function (depthZ) {
     var vec = [depthZ[0] / 256.0, depthZ[1] / 256.0, depthZ[2] / 256.0, depthZ[3] / 256.0];
     var bitShift = [1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0];
-    return SceneJS_math_dotVector4(vec, bitShift);
+    return SceneJS.math.dotVector4(vec, bitShift);
 };
 
 SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
@@ -14649,6 +16719,7 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
 SceneJS_Display.prototype.destroy = function () {
     this._programFactory.destroy();
 };
+
 
 /**
  * @class Manages creation, sharing and recycle of {@link SceneJS_ProgramSource} instances
@@ -15623,7 +17694,8 @@ var SceneJS_ProgramSourceFactory = new (function () {
         return src;
     };
 
-})();/**
+})();
+/**
  * @class Source code for pick and draw shader programs, to be compiled into one or more {@link SceneJS_Program}s
  * @private
  * 
@@ -15671,6 +17743,7 @@ var SceneJS_ProgramSource = function(hash, pickVertexSrc, pickFragmentSrc, drawV
      */
     this.useCount = 0;
 };
+
 
 /**  
  * @class Manages creation, sharing and recycle of {@link SceneJS_Program} instances
@@ -15741,6 +17814,7 @@ SceneJS_ProgramFactory.prototype.webglRestored = function() {
  */
 SceneJS_ProgramFactory.prototype.destroy = function() {
 };
+
 /**
  * @class Vertex and fragment shaders for pick and draw
  * @private
@@ -15805,7 +17879,8 @@ SceneJS_Program.prototype.build = function(gl) {
     this.gl = gl;
     this.draw = new SceneJS_webgl_Program(gl, [this.source.drawVertexSrc.join("\n")], [this.source.drawFragmentSrc.join("\n")]);
     this.pick = new SceneJS_webgl_Program(gl, [this.source.pickVertexSrc.join("\n")], [this.source.pickFragmentSrc.join("\n")]);
-};/**
+};
+/**
  * @class Manages creation and recycle of {@link SceneJS_Object} instances
  * @private
  */
@@ -15851,7 +17926,8 @@ SceneJS_ObjectFactory.prototype.getObject = function(id) {
 SceneJS_ObjectFactory.prototype.putObject = function (object) {
 
     this._freeObjects[this._numFreeObjects++] = object;
-};/**
+};
+/**
  * @class An object within a {@link SceneJS_Display}
  * @private
  */
@@ -15912,7 +17988,8 @@ var SceneJS_Object = function(id) {
      * State core for the {@link SceneJS.Tag} that this object was compiled from, used for visibility cull
      */
     this.tag = null;
-};/**
+};
+/**
  * @class A facade which exposes internal scene rendering state to "rendered" event listeners bound to scene graph nodes with {@link SceneJS.Node#bind}.
  *
  * <p>The listener is fired for each {@link SceneJS.Geometry} that is rendered within the subgraph of the bound node.
@@ -15978,27 +18055,28 @@ SceneJS.RenderContext.prototype.getCanvasPos = function(offset) {
  */
 SceneJS.RenderContext.prototype.getCameraPos = function(offset) {
     this.getProjPos(offset);
-    this._camPos = SceneJS_math_normalizeVec3(this._pc, [0,0,0]);
+    this._camPos = SceneJS.math.normalizeVec3(this._pc, [0,0,0]);
     return { x: this._camPos[0], y: this._camPos[1], z: this._camPos[2] }; // TODO: return _camPos and lose the temp object
 };
 
 
 SceneJS.RenderContext.prototype.getProjPos = function(offset) {
     this.getViewPos(offset);
-    this._pc = SceneJS_math_transformPoint3(this._frameCtx.cameraMat, this._vc);
+    this._pc = SceneJS.math.transformPoint3(this._frameCtx.cameraMat, this._vc);
     return { x: this._pc[0], y: this._pc[1], z: this._pc[2],  w: this._pc[3] };
 };
 
 SceneJS.RenderContext.prototype.getViewPos = function(offset) {
     this.getWorldPos(offset);
-    this._vc = SceneJS_math_transformPoint3(this._frameCtx.viewMat, this._wc);
+    this._vc = SceneJS.math.transformPoint3(this._frameCtx.viewMat, this._wc);
     return { x: this._vc[0], y: this._vc[1], z: this._vc[2],  w: this._vc[3] };
 };
 
 SceneJS.RenderContext.prototype.getWorldPos = function(offset) {
-    this._wc = SceneJS_math_transformPoint3(this._frameCtx.modelMat, offset || [0,0,0]);
+    this._wc = SceneJS.math.transformPoint3(this._frameCtx.modelMat, offset || [0,0,0]);
     return { x: this._wc[0], y: this._wc[1], z: this._wc[2],  w: this._wc[3] };
 };
+
 /**
  * @class A chunk of WebGL state changes to render a {@link SceneJS_Core} for drawing and picking (if applicable to the core type).
  *
@@ -16065,6 +18143,7 @@ SceneJS_Chunk.prototype.init = function(id, program, core) {
         this.build();
     }
 };
+
 /**
  * @class Manages creation, reuse and destruction of {@link SceneJS_Chunk}s for the nodes within a single {@link SceneJS_Display}.
  * @private
@@ -16206,6 +18285,7 @@ SceneJS_ChunkFactory.prototype.webglRestored = function () {
         }
     }
 };
+
 SceneJS_ChunkFactory.createChunkType({
 
     type: "camera",
@@ -16256,7 +18336,8 @@ SceneJS_ChunkFactory.createChunkType({
 
         ctx.cameraMat = this.core.mat; // Query only in draw pass
     }
-});/**
+});
+/**
  * Create display state chunk type for draw and pick render of user clipping planes
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16328,7 +18409,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});/**
+});
+/**
  *
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16352,7 +18434,8 @@ SceneJS_ChunkFactory.createChunkType({
 
         gl.drawElements(this.core.primitive, this.core.indexBuf.numItems, gl.UNSIGNED_SHORT, 0);
     }
-});/**
+});
+/**
  *  Create display state chunk type for draw and pick render of flags
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16413,7 +18496,8 @@ SceneJS_ChunkFactory.createChunkType({
             gl.uniform1i(this._uDiffuseDraw, this.core.diffuse);
         }
     }
-});/**
+});
+/**
  *   Create display state chunk type for draw and pick render of framebuf
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16444,7 +18528,8 @@ SceneJS_ChunkFactory.createChunkType({
             ctx.framebuf = framebuf;  // Must flush on cleanup
         }
     }
-});/**
+});
+/**
  *  Create display state chunk type for draw and pick render of geometry
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16542,7 +18627,8 @@ SceneJS_ChunkFactory.createChunkType({
 
         gl.drawElements(this.core.primitive, this.core.indexBuf.numItems, gl.UNSIGNED_SHORT, 0);
     }
-});/**
+});
+/**
  *  Create display state chunk type for draw render of lights projection
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16624,7 +18710,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});/**
+});
+/**
  *
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16648,7 +18735,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});/**
+});
+/**
  * Create display state chunk type for draw and pick render of lookAt transform
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16697,7 +18785,8 @@ SceneJS_ChunkFactory.createChunkType({
 
         ctx.viewMat = this.core.mat;
     }
-});/**
+});
+/**
  * Create display state chunk type for draw render of material transform
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16744,7 +18833,8 @@ SceneJS_ChunkFactory.createChunkType({
             gl.uniform1f(this._uMaterialAlpha, this.core.alpha);
         }
     }
-});/**
+});
+/**
  * Create display state chunk type for draw render of material transform
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -16910,6 +19000,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 /**
  * Create display state chunk type for draw render of material transform
  */
@@ -16934,7 +19025,8 @@ SceneJS_ChunkFactory.createChunkType({
             this.program.gl.uniform3fv(this._uPickColor, [r / 255, g / 255, b / 255]);
         }
     }
-});SceneJS_ChunkFactory.createChunkType({
+});
+SceneJS_ChunkFactory.createChunkType({
 
     type: "program",
 
@@ -17007,6 +19099,7 @@ SceneJS_ChunkFactory.createChunkType({
 
 
 
+
 /**
  *
  */
@@ -17032,6 +19125,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 /**
  *
  */
@@ -17071,6 +19165,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 /**
  *
  */
@@ -17102,6 +19197,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 /**
  *
  */
@@ -17130,6 +19226,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 /**
  *
  */
@@ -17160,7 +19257,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});/**
+});
+/**
  *
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -17190,7 +19288,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});/**
+});
+/**
  *
  */
 SceneJS_ChunkFactory.createChunkType({
@@ -17211,6 +19310,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 SceneJS_ChunkFactory.createChunkType({
 
     type: "texture",
@@ -17274,7 +19374,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
     }
-});SceneJS_ChunkFactory.createChunkType({
+});
+SceneJS_ChunkFactory.createChunkType({
 
     type: "xform",
 
@@ -17333,4 +19434,24 @@ SceneJS_ChunkFactory.createChunkType({
         ctx.modelMat = this.core.mat;
     }
 });
-SceneJS.configure({ pluginPath: "http://xeolabs.github.com/scenejs/api/latest/plugins" });
+
+// Configure RequireJS to find plugins relative to plugins location
+(function () {
+
+    var pluginPath;
+
+    SceneJS.on("configs",
+        function (configs) {
+            if (configs.pluginPath != pluginPath) {
+                pluginPath = configs.pluginPath;
+                var libPath = pluginPath + "/lib";
+                
+                require.config({
+                    paths:{
+                        "scenejsPluginDeps":libPath
+                    }
+                });
+            }
+        });
+})();
+SceneJS.configure({ pluginPath: "/api/latest/plugins" });

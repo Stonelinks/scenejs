@@ -3,17 +3,17 @@
  * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
  *
- * Built on 2013-10-26
+ * Built on 2014-01-14
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * Copyright 2013, Lindsay Kay
+ * Copyright 2014, Lindsay Kay
  *
  */
 
 if (undefined === require) {
 
 /** vim: et:ts=4:sw=4:sts=4
- * @license RequireJS 2.1.8 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS 2.1.10 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/requirejs for details
  */
@@ -26,7 +26,7 @@ var requirejs, require, define;
 (function (global) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-        version = '2.1.8',
+        version = '2.1.10',
         commentRegExp = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
@@ -36,7 +36,7 @@ var requirejs, require, define;
         hasOwn = op.hasOwnProperty,
         ap = Array.prototype,
         apsp = ap.splice,
-        isBrowser = !!(typeof window !== 'undefined' && navigator && window.document),
+        isBrowser = !!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && window.document),
         isWebWorker = !isBrowser && typeof importScripts !== 'undefined',
         //PS3 indicates loaded and complete, but need to wait for complete
         //specifically. Sequence is 'loading', 'loaded', execution,
@@ -122,7 +122,10 @@ var requirejs, require, define;
         if (source) {
             eachProp(source, function (value, prop) {
                 if (force || !hasProp(target, prop)) {
-                    if (deepStringMixin && typeof value !== 'string') {
+                    if (deepStringMixin && typeof value === 'object' && value &&
+                        !isArray(value) && !isFunction(value) &&
+                        !(value instanceof RegExp)) {
+
                         if (!target[prop]) {
                             target[prop] = {};
                         }
@@ -215,6 +218,7 @@ var requirejs, require, define;
                 waitSeconds: 7,
                 baseUrl: './',
                 paths: {},
+                bundles: {},
                 pkgs: {},
                 shim: {},
                 config: {}
@@ -228,6 +232,7 @@ var requirejs, require, define;
             defQueue = [],
             defined = {},
             urlFetched = {},
+            bundlesMap = {},
             requireCounter = 1,
             unnormalizedCounter = 1;
 
@@ -241,8 +246,8 @@ var requirejs, require, define;
          * @param {Array} ary the array of path segments.
          */
         function trimDots(ary) {
-            var i, part;
-            for (i = 0; ary[i]; i += 1) {
+            var i, part, length = ary.length;
+            for (i = 0; i < length; i++) {
                 part = ary[i];
                 if (part === '.') {
                     ary.splice(i, 1);
@@ -275,7 +280,7 @@ var requirejs, require, define;
          * @returns {String} normalized name
          */
         function normalize(name, baseName, applyMap) {
-            var pkgName, pkgConfig, mapValue, nameParts, i, j, nameSegment,
+            var pkgMain, mapValue, nameParts, i, j, nameSegment, lastIndex,
                 foundMap, foundI, foundStarMap, starI,
                 baseParts = baseName && baseName.split('/'),
                 normalizedBaseParts = baseParts,
@@ -288,29 +293,26 @@ var requirejs, require, define;
                 //otherwise, assume it is a top-level require that will
                 //be relative to baseUrl in the end.
                 if (baseName) {
-                    if (getOwn(config.pkgs, baseName)) {
-                        //If the baseName is a package name, then just treat it as one
-                        //name to concat the name with.
-                        normalizedBaseParts = baseParts = [baseName];
-                    } else {
-                        //Convert baseName to array, and lop off the last part,
-                        //so that . matches that 'directory' and not name of the baseName's
-                        //module. For instance, baseName of 'one/two/three', maps to
-                        //'one/two/three.js', but we want the directory, 'one/two' for
-                        //this normalization.
-                        normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
+                    //Convert baseName to array, and lop off the last part,
+                    //so that . matches that 'directory' and not name of the baseName's
+                    //module. For instance, baseName of 'one/two/three', maps to
+                    //'one/two/three.js', but we want the directory, 'one/two' for
+                    //this normalization.
+                    normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
+                    name = name.split('/');
+                    lastIndex = name.length - 1;
+
+                    // If wanting node ID compatibility, strip .js from end
+                    // of IDs. Have to do this here, and not in nameToUrl
+                    // because node allows either .js or non .js to map
+                    // to same file.
+                    if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                        name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
                     }
 
-                    name = normalizedBaseParts.concat(name.split('/'));
+                    name = normalizedBaseParts.concat(name);
                     trimDots(name);
-
-                    //Some use of packages may use a . path to reference the
-                    //'main' module name, so normalize for that.
-                    pkgConfig = getOwn(config.pkgs, (pkgName = name[0]));
                     name = name.join('/');
-                    if (pkgConfig && name === pkgName + '/' + pkgConfig.main) {
-                        name = pkgName;
-                    }
                 } else if (name.indexOf('./') === 0) {
                     // No baseName, so this is ID is resolved relative
                     // to baseUrl, pull off the leading dot.
@@ -322,7 +324,7 @@ var requirejs, require, define;
             if (applyMap && map && (baseParts || starMap)) {
                 nameParts = name.split('/');
 
-                for (i = nameParts.length; i > 0; i -= 1) {
+                outerLoop: for (i = nameParts.length; i > 0; i -= 1) {
                     nameSegment = nameParts.slice(0, i).join('/');
 
                     if (baseParts) {
@@ -339,14 +341,10 @@ var requirejs, require, define;
                                     //Match, update name to the new value.
                                     foundMap = mapValue;
                                     foundI = i;
-                                    break;
+                                    break outerLoop;
                                 }
                             }
                         }
-                    }
-
-                    if (foundMap) {
-                        break;
                     }
 
                     //Check for a star map match, but just hold on to it,
@@ -369,7 +367,11 @@ var requirejs, require, define;
                 }
             }
 
-            return name;
+            // If the name points to a package's name, use
+            // the package main instead.
+            pkgMain = getOwn(config.pkgs, name);
+
+            return pkgMain ? pkgMain : name;
         }
 
         function removeScript(name) {
@@ -387,7 +389,6 @@ var requirejs, require, define;
         function hasPathFallback(id) {
             var pathConfig = getOwn(config.paths, id);
             if (pathConfig && isArray(pathConfig) && pathConfig.length > 1) {
-                removeScript(id);
                 //Pop off the first array value, since it failed, and
                 //retry
                 pathConfig.shift();
@@ -563,7 +564,7 @@ var requirejs, require, define;
                 //local var ref to defQueue, so cannot just reassign the one
                 //on context.
                 apsp.apply(defQueue,
-                           [defQueue.length - 1, 0].concat(globalDefQueue));
+                           [defQueue.length, 0].concat(globalDefQueue));
                 globalDefQueue = [];
             }
         }
@@ -594,15 +595,9 @@ var requirejs, require, define;
                         id: mod.map.id,
                         uri: mod.map.url,
                         config: function () {
-                            var c,
-                                pkg = getOwn(config.pkgs, mod.map.id);
-                            // For packages, only support config targeted
-                            // at the main module.
-                            c = pkg ? getOwn(config.config, mod.map.id + '/' + pkg.main) :
-                                      getOwn(config.config, mod.map.id);
-                            return  c || {};
+                            return  getOwn(config.config, mod.map.id) || {};
                         },
-                        exports: defined[mod.map.id]
+                        exports: handlers.exports(mod)
                     });
                 }
             }
@@ -643,7 +638,7 @@ var requirejs, require, define;
         }
 
         function checkLoaded() {
-            var map, modId, err, usingPathFallback,
+            var err, usingPathFallback,
                 waitInterval = config.waitSeconds * 1000,
                 //It is possible to disable the wait interval by using waitSeconds of 0.
                 expired = waitInterval && (context.startTime + waitInterval) < new Date().getTime(),
@@ -661,8 +656,8 @@ var requirejs, require, define;
 
             //Figure out the state of all the modules.
             eachProp(enabledRegistry, function (mod) {
-                map = mod.map;
-                modId = map.id;
+                var map = mod.map,
+                    modId = map.id;
 
                 //Skip things that are not enabled or in error state.
                 if (!mod.enabled) {
@@ -885,17 +880,14 @@ var requirejs, require, define;
                                 exports = context.execCb(id, factory, depExports, exports);
                             }
 
-                            if (this.map.isDefine) {
-                                //If setting exports via 'module' is in play,
-                                //favor that over return value and exports. After that,
-                                //favor a non-undefined return value over exports use.
+                            // Favor return value over exports. If node/cjs in play,
+                            // then will not have a return value anyway. Favor
+                            // module.exports assignment over exports object.
+                            if (this.map.isDefine && exports === undefined) {
                                 cjsModule = this.module;
-                                if (cjsModule &&
-                                        cjsModule.exports !== undefined &&
-                                        //Make sure it is not already the exports value
-                                        cjsModule.exports !== this.exports) {
+                                if (cjsModule) {
                                     exports = cjsModule.exports;
-                                } else if (exports === undefined && this.usingExports) {
+                                } else if (this.usingExports) {
                                     //exports already set the defined value.
                                     exports = this.exports;
                                 }
@@ -955,6 +947,7 @@ var requirejs, require, define;
 
                 on(pluginMap, 'defined', bind(this, function (plugin) {
                     var load, normalizedMap, normalizedMod,
+                        bundleId = getOwn(bundlesMap, this.map.id),
                         name = this.map.name,
                         parentName = this.map.parentMap ? this.map.parentMap.name : null,
                         localRequire = context.makeRequire(map.parentMap, {
@@ -997,6 +990,14 @@ var requirejs, require, define;
                             normalizedMod.enable();
                         }
 
+                        return;
+                    }
+
+                    //If a paths config, then just load that file instead to
+                    //resolve the plugin, as it is built into that paths layer.
+                    if (bundleId) {
+                        this.map.url = context.nameToUrl(bundleId);
+                        this.load();
                         return;
                     }
 
@@ -1264,30 +1265,37 @@ var requirejs, require, define;
                     }
                 }
 
-                //Save off the paths and packages since they require special processing,
+                //Save off the paths since they require special processing,
                 //they are additive.
-                var pkgs = config.pkgs,
-                    shim = config.shim,
+                var shim = config.shim,
                     objs = {
                         paths: true,
+                        bundles: true,
                         config: true,
                         map: true
                     };
 
                 eachProp(cfg, function (value, prop) {
                     if (objs[prop]) {
-                        if (prop === 'map') {
-                            if (!config.map) {
-                                config.map = {};
-                            }
-                            mixin(config[prop], value, true, true);
-                        } else {
-                            mixin(config[prop], value, true);
+                        if (!config[prop]) {
+                            config[prop] = {};
                         }
+                        mixin(config[prop], value, true, true);
                     } else {
                         config[prop] = value;
                     }
                 });
+
+                //Reverse map the bundles
+                if (cfg.bundles) {
+                    eachProp(cfg.bundles, function (value, prop) {
+                        each(value, function (v) {
+                            if (v !== prop) {
+                                bundlesMap[v] = prop;
+                            }
+                        });
+                    });
+                }
 
                 //Merge shim
                 if (cfg.shim) {
@@ -1309,29 +1317,25 @@ var requirejs, require, define;
                 //Adjust packages if necessary.
                 if (cfg.packages) {
                     each(cfg.packages, function (pkgObj) {
-                        var location;
+                        var location, name;
 
                         pkgObj = typeof pkgObj === 'string' ? { name: pkgObj } : pkgObj;
+
+                        name = pkgObj.name;
                         location = pkgObj.location;
+                        if (location) {
+                            config.paths[name] = pkgObj.location;
+                        }
 
-                        //Create a brand new object on pkgs, since currentPackages can
-                        //be passed in again, and config.pkgs is the internal transformed
-                        //state for all package configs.
-                        pkgs[pkgObj.name] = {
-                            name: pkgObj.name,
-                            location: location || pkgObj.name,
-                            //Remove leading dot in main, so main paths are normalized,
-                            //and remove any trailing .js, since different package
-                            //envs have different conventions: some use a module name,
-                            //some use a file name.
-                            main: (pkgObj.main || 'main')
-                                  .replace(currDirRegExp, '')
-                                  .replace(jsSuffixRegExp, '')
-                        };
+                        //Save pointer to main module ID for pkg name.
+                        //Remove leading dot in main, so main paths are normalized,
+                        //and remove any trailing .js, since different package
+                        //envs have different conventions: some use a module name,
+                        //some use a file name.
+                        config.pkgs[name] = pkgObj.name + '/' + (pkgObj.main || 'main')
+                                     .replace(currDirRegExp, '')
+                                     .replace(jsSuffixRegExp, '');
                     });
-
-                    //Done with modifications, assing packages back to context config
-                    config.pkgs = pkgs;
                 }
 
                 //If there are any "waiting to execute" modules in the registry,
@@ -1478,9 +1482,20 @@ var requirejs, require, define;
                         var map = makeModuleMap(id, relMap, true),
                             mod = getOwn(registry, id);
 
+                        removeScript(id);
+
                         delete defined[id];
                         delete urlFetched[map.url];
                         delete undefEvents[id];
+
+                        //Clean queued defines too. Go backwards
+                        //in array so that the splices do not
+                        //mess up the iteration.
+                        eachReverse(defQueue, function(args, i) {
+                            if(args[0] === id) {
+                                defQueue.splice(i, 1);
+                            }
+                        });
 
                         if (mod) {
                             //Hold on to listeners in case the
@@ -1575,8 +1590,19 @@ var requirejs, require, define;
              * internal API, not a public one. Use toUrl for the public API.
              */
             nameToUrl: function (moduleName, ext, skipExt) {
-                var paths, pkgs, pkg, pkgPath, syms, i, parentModule, url,
-                    parentPath;
+                var paths, syms, i, parentModule, url,
+                    parentPath, bundleId,
+                    pkgMain = getOwn(config.pkgs, moduleName);
+
+                if (pkgMain) {
+                    moduleName = pkgMain;
+                }
+
+                bundleId = getOwn(bundlesMap, moduleName);
+
+                if (bundleId) {
+                    return context.nameToUrl(bundleId, ext, skipExt);
+                }
 
                 //If a colon is in the URL, it indicates a protocol is used and it is just
                 //an URL to a file, or if it starts with a slash, contains a query arg (i.e. ?)
@@ -1590,7 +1616,6 @@ var requirejs, require, define;
                 } else {
                     //A module that needs to be converted to a path.
                     paths = config.paths;
-                    pkgs = config.pkgs;
 
                     syms = moduleName.split('/');
                     //For each module name segment, see if there is a path
@@ -1598,7 +1623,7 @@ var requirejs, require, define;
                     //and work up from it.
                     for (i = syms.length; i > 0; i -= 1) {
                         parentModule = syms.slice(0, i).join('/');
-                        pkg = getOwn(pkgs, parentModule);
+
                         parentPath = getOwn(paths, parentModule);
                         if (parentPath) {
                             //If an array, it means there are a few choices,
@@ -1608,22 +1633,12 @@ var requirejs, require, define;
                             }
                             syms.splice(0, i, parentPath);
                             break;
-                        } else if (pkg) {
-                            //If module name is just the package name, then looking
-                            //for the main module.
-                            if (moduleName === pkg.name) {
-                                pkgPath = pkg.location + '/' + pkg.main;
-                            } else {
-                                pkgPath = pkg.location;
-                            }
-                            syms.splice(0, i, pkgPath);
-                            break;
                         }
                     }
 
                     //Join the path parts together, then figure out if baseUrl is needed.
                     url = syms.join('/');
-                    url += (ext || (/\?/.test(url) || skipExt ? '' : '.js'));
+                    url += (ext || (/^data\:|\?/.test(url) || skipExt ? '' : '.js'));
                     url = (url.charAt(0) === '/' || url.match(/^[\w\+\.\-]+:/) ? '' : config.baseUrl) + url;
                 }
 
@@ -1932,7 +1947,7 @@ var requirejs, require, define;
     }
 
     //Look for a data-main script attribute, which could also adjust the baseUrl.
-    if (isBrowser) {
+    if (isBrowser && !cfg.skipDataMain) {
         //Figure out baseUrl. Get it from the script tag with require.js in it.
         eachReverse(scripts(), function (script) {
             //Set the 'head' where we can append children by
@@ -4227,7 +4242,7 @@ SceneJS_Engine.prototype.pick = function (canvasX, canvasY, options) {
  */
 SceneJS_Engine.prototype._tryCompile = function () {
 
-   // this._doAddNodes();
+    // this._doAddNodes();
 
     if (this.display.imageDirty // Frame buffer needs redraw
         || this.display.drawListDirty // Draw list needs rebuild
@@ -4246,7 +4261,12 @@ SceneJS_Engine.prototype._tryCompile = function () {
                 engine:this                                            // Compilation support modules get ready
             });
 
-            this.scene._compileNodes(); // Begin depth-first compilation descent into scene sub-nodes
+            this.pubSubProxy = new SceneJS_PubSubProxy(this.scene, null);
+            var ctx = {
+                pubSubProxy : this.pubSubProxy
+            };
+
+            this.scene._compileNodes(ctx); // Begin depth-first compilation descent into scene sub-nodes
         }
 
         this._doDestroyNodes(); // Garbage collect destroyed nodes - node destructions set imageDirty true
@@ -8316,6 +8336,9 @@ SceneJS.Node.prototype.on = function (topic, callback) {
     if (topic == "rendered") {
         this._engine.branchDirty(this);
     }
+//    if (topic == "tick") {
+//        this._engine.scene.on("tick",callback);
+//    }
     // }
     return handle;
 };
@@ -8337,6 +8360,9 @@ SceneJS.Node.prototype.off = function (handle) {
             this._engine.branchDirty(this);
         }
     }
+//    else {
+//        this._engine.scene.off(handle);
+//    }
 };
 
 /**
@@ -9364,23 +9390,31 @@ SceneJS.Node.prototype.getJSON = function () {
 };
 
 
-SceneJS.Node.prototype._compile = function () {
+SceneJS.Node.prototype._compile = function (ctx) {
     if (this.preCompile) {
         this.preCompile();
     }
-    this._compileNodes();
+    this._compileNodes(ctx);
     if (this.postCompile) {
         this.postCompile();
     }
 };
 
-SceneJS.Node.prototype._compileNodes = function () {
+SceneJS.Node.prototype._compileNodes = function (ctx) {
 
     var renderSubs = this._topicSubs["rendered"];
 
     if (renderSubs) {
         SceneJS_nodeEventsModule.preVisitNode(this);
     }
+
+//    var tickSubs = this._topicSubs["tick"];
+//
+//    if (tickSubs) {
+//        ctx.pubSubProxy.on("tick", function(event) {
+//            this.publish("tick", event);
+//        });
+//    }
 
     var child;
 
@@ -9391,7 +9425,7 @@ SceneJS.Node.prototype._compileNodes = function () {
         child.branchDirty = child.branchDirty || this.branchDirty; // Compile subnodes if scene branch dirty
 
         if (child.dirty || child.branchDirty || this._engine.sceneDirty) {  // Compile nodes that are flagged dirty
-            child._compile();
+            child._compile(ctx);
             child.dirty = false;
             child.branchDirty = false;
         }
@@ -9784,9 +9818,9 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
      * Compiles this camera node, setting this node's state core on the display, compiling sub-nodes,
      * then restoring the previous camera state core back onto the display on exit.
      */
-    SceneJS.Camera.prototype._compile = function () {
+    SceneJS.Camera.prototype._compile = function (ctx) {
         this._engine.display.projTransform = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.projTransform = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -9881,14 +9915,14 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         this._core.hash = null;
     };
 
-    SceneJS.Clips.prototype._compile = function() {
+    SceneJS.Clips.prototype._compile = function(ctx) {
 
         if (!this._core.hash) {
             this._core.hash = this._core.clips.length;
         }
 
         this._engine.display.clips = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.clips = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -9941,9 +9975,9 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         return this._core.enabled;
     };
 
-    SceneJS.Enable.prototype._compile = function () {
+    SceneJS.Enable.prototype._compile = function (ctx) {
         this._engine.display.enable = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.enable = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -10257,9 +10291,9 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         return this._core.ambient;
     };
 
-    SceneJS.Flags.prototype._compile = function() {
+    SceneJS.Flags.prototype._compile = function(ctx) {
         this._engine.display.flags = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.flags = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -10451,9 +10485,9 @@ new (function() {
         };
     };
 
-    SceneJS.Framebuf.prototype._compile = function() {
+    SceneJS.Framebuf.prototype._compile = function(ctx) {
         this._engine.display.framebuf = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.framebuf = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -11101,10 +11135,10 @@ new (function () {
         return this._boundary;
     };
 
-    SceneJS.Geometry.prototype._compile = function () {
+    SceneJS.Geometry.prototype._compile = function (ctx) {
 
         if (this._core._loading) { // TODO: Breaks with asynch loaded cores - this node needs to recompile when target core is loaded
-            this._compileNodes();
+            this._compileNodes(ctx);
             return;
         }
 
@@ -11148,7 +11182,7 @@ new (function () {
             coreStack[stackLen++] = this._core;
         }
 
-        this._compileNodes();
+        this._compileNodes(ctx);
 
         stackLen--;
     };
@@ -11301,9 +11335,9 @@ new (function () {
         return this._core.clearDepth;
     };
 
-    SceneJS.Layer.prototype._compile = function() {
+    SceneJS.Layer.prototype._compile = function(ctx) {
         this._engine.display.layer = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.layer = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -11315,7 +11349,7 @@ new (function () {
  * @extends SceneJS.Node
  */
 SceneJS.Library = SceneJS_NodeFactory.createNodeType("library");
-SceneJS.Library.prototype._compile = function() { // Bypass child nodes
+SceneJS.Library.prototype._compile = function(ctx) { // Bypass child nodes
 };
 
 
@@ -11573,14 +11607,14 @@ SceneJS.Library.prototype._compile = function() { // Bypass child nodes
         this._core.hash = null;
     };
 
-    SceneJS.Lights.prototype._compile = function () {
+    SceneJS.Lights.prototype._compile = function (ctx) {
 
         if (!this._core.hash) {
             makeHash(this._core);
         }
 
         this._engine.display.lights = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.lights = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -11981,9 +12015,9 @@ SceneJS.Library.prototype._compile = function() { // Bypass child nodes
         };
     };
 
-    SceneJS.Lookat.prototype._compile = function () {
+    SceneJS.Lookat.prototype._compile = function (ctx) {
         this._engine.display.viewTransform = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.viewTransform = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -12142,9 +12176,9 @@ new (function () {
         return this._core.alpha;
     };
 
-    SceneJS.Material.prototype._compile = function () {
+    SceneJS.Material.prototype._compile = function (ctx) {
         this._engine.display.material = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.material = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -12485,14 +12519,14 @@ new (function () {
         return this._core.targets;
     };
 
-    SceneJS.MorphGeometry.prototype._compile = function () {
+    SceneJS.MorphGeometry.prototype._compile = function (ctx) {
 
         if (!this._core.hash) {
             this._makeHash();
         }
 
         this._engine.display.morphGeometry = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.morphGeometry = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -12582,7 +12616,7 @@ new (function () {
         return this._core.name;
     };
 
-    SceneJS.Name.prototype._compile = function () {
+    SceneJS.Name.prototype._compile = function (ctx) {
 
         this._engine.display.name = coreStack[stackLen++] = this._core;
 
@@ -12597,7 +12631,7 @@ new (function () {
         }
         this._core.path = path.join(".");
 
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.name = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 })();
@@ -13369,7 +13403,7 @@ new (function() {
         } : undefined;
     };
 
-    SceneJS.Renderer.prototype._compile = function() {
+    SceneJS.Renderer.prototype._compile = function(ctx) {
 
 //        if (this._core.dirty) {
 //            this._core.props = createProps(this._core);
@@ -13377,7 +13411,7 @@ new (function() {
 //        }
 //
 //        this._engine.display.renderer = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         //this._engine.display.renderer = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 })();
@@ -13516,9 +13550,9 @@ new (function() {
         return this._core._depthFuncName;
     };
 
-    SceneJS.DepthBuf.prototype._compile = function () {
+    SceneJS.DepthBuf.prototype._compile = function (ctx) {
         this._engine.display.depthbuf = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.depthbuf = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -13580,9 +13614,9 @@ new (function() {
         return this._core.blendEnabled;
     };
 
-    SceneJS.ColorBuf.prototype._compile = function () {
+    SceneJS.ColorBuf.prototype._compile = function (ctx) {
         this._engine.display.colorbuf = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.colorbuf = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -13654,9 +13688,9 @@ new (function() {
         return this._core.scissorTestEnabled;
     };
 
-    SceneJS.View.prototype._compile = function () {
+    SceneJS.View.prototype._compile = function (ctx) {
         this._engine.display.view = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.view = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -13782,6 +13816,8 @@ SceneJS.Scene.prototype.pick = function (canvasX, canvasY, options) {
     if (result) {
         this.publish("pick", result);
         return result;
+    } else {
+        this.publish("nopick");
     }
 };
 
@@ -14068,7 +14104,7 @@ new (function() {
         return params;
     };
 
-    SceneJS.Shader.prototype._compile = function() {
+    SceneJS.Shader.prototype._compile = function(ctx) {
 
         idStack[stackLen] = this._core.coreId; // Draw list node tied to core, not node
 
@@ -14088,7 +14124,7 @@ new (function() {
         stackLen++;
         dirty = true;
 
-        this._compileNodes();
+        this._compileNodes(ctx);
 
         stackLen--;
         dirty = true;
@@ -14178,14 +14214,14 @@ new (function() {
         return params;
     };
 
-    SceneJS.ShaderParams.prototype._compile = function() {
+    SceneJS.ShaderParams.prototype._compile = function(ctx) {
 
         idStack[stackLen] = this._core.coreId; // Tie draw list state to core, not to scene node
         shaderParamsStack[stackLen] = this._core.params;
         stackLen++;
         dirty = true;
 
-        this._compileNodes();
+        this._compileNodes(ctx);
 
         stackLen--;
         dirty = true;
@@ -14249,9 +14285,9 @@ new (function() {
         return this._core.lineWidth;
     };
 
-    SceneJS.Style.prototype._compile = function () {
+    SceneJS.Style.prototype._compile = function (ctx) {
         this._engine.display.style = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.style = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -14310,9 +14346,9 @@ new (function() {
         return this._core.tag;
     };
 
-    SceneJS.Tag.prototype._compile = function() {
+    SceneJS.Tag.prototype._compile = function(ctx) {
         this._engine.display.tag = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.tag = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 })();
@@ -14749,12 +14785,12 @@ new (function () {
         }
     };
 
-    SceneJS.Texture.prototype._compile = function () {
+    SceneJS.Texture.prototype._compile = function (ctx) {
         if (!this._core.hash) {
             this._makeHash();
         }
         this._engine.display.texture = coreStack[stackLen++] = this._core;
-        this._compileNodes();
+        this._compileNodes(ctx);
         this._engine.display.texture = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
@@ -14881,9 +14917,9 @@ SceneJS.XForm.prototype.setElements = function (elements) {
     return this;
 };
 
-SceneJS.XForm.prototype._compile = function () {
+SceneJS.XForm.prototype._compile = function (ctx) {
     SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes();
+    this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
 
@@ -14967,9 +15003,9 @@ SceneJS.Matrix.prototype.setMatrix = function(elements) {
  */
 SceneJS.Matrix.prototype.setElements = SceneJS.Matrix.prototype.setMatrix;
 
-SceneJS.Matrix.prototype._compile = function() {
+SceneJS.Matrix.prototype._compile = function(ctx) {
     SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes();
+    this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
 
@@ -15116,9 +15152,9 @@ SceneJS.Rotate.prototype.incAngle = function(angle) {
     this._engine.display.imageDirty = true;
 };
 
-SceneJS.Rotate.prototype._compile = function() {
+SceneJS.Rotate.prototype._compile = function(ctx) {
     SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes();
+    this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
 
@@ -15275,9 +15311,9 @@ SceneJS.Translate.prototype.incZ = function(z) {
     return this;
 };
 
-SceneJS.Translate.prototype._compile = function() {
+SceneJS.Translate.prototype._compile = function(ctx) {
     SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes();
+    this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
 
@@ -15428,9 +15464,9 @@ SceneJS.Scale.prototype.incZ = function (z) {
     this._engine.display.imageDirty = true;
 };
 
-SceneJS.Scale.prototype._compile = function () {
+SceneJS.Scale.prototype._compile = function (ctx) {
     SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes();
+    this._compileNodes(ctx);
     SceneJS_modelXFormStack.pop();
 };
 
