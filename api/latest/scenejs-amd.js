@@ -1221,6 +1221,11 @@ var SceneJS = new (function () {
             }
         }
 
+        // sometimes crap gets stuck in engineIds
+        for (var id in this._engineIds.items) {
+            this._engineIds.removeItem(id);
+        }
+
         while (temp.length > 0) { // Destroy the engines
             temp.pop().destroy();
         }
