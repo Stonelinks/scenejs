@@ -107,12 +107,19 @@
             },
             {
                 "title":"Controlling transparency of subgraphs",
-                "tags":["flags"],
+                "tags":["flags", "transparency"],
                 "tip":"Toggling modes for sub-nodes using a parent flags node",
                 "nodes":[
                     {
+                        "title":"Basic transparency",
+                        "tags":[],
+                        "tip":"Using a flags node in combination with material alpha to make an object transparent",
+                        "path":"transparency/transparency.html",
+                        "id":"basicTransparency"
+                    },
+                    {
                         "title":"Toggle transparency",
-                        "tags":["transparency"],
+                        "tags":[],
                         "tip":"Using a flags node to switch transparency for child geometries",
                         "path":"flags/transparent.html"
                     }
@@ -565,6 +572,18 @@
         "tip":"",
         "nodes":[
             {
+                "title":"Defaults",
+                "tags":["defaults"],
+                "nodes":[
+                    {
+                        "title":"Default lights and  material",
+                        "tip":"What SceneJS provides by default whenever you omit lights and/or material around your geometry",
+                        "path":"lights/default.html",
+                        "id":"defaultLightAndMaterial"
+                    }
+                ]
+            },
+            {
                 "title":"Ambient",
                 "tip":"Defining an ambient light source",
                 "tags":["ambientLight"],
@@ -850,19 +869,31 @@
                 "tags":[ "picking"],
                 "nodes":[
                     {
-                        "title":"Pick objects with mouse",
-                        "path":"picking/picking.html",
+                        "title":"Basic 2D picking",
+                        "path":"picking/basicPicking.html",
                         "tags":[],
                         "id":"picking"
                     },
                     {
-                        "title":"Pick name hierarchy",
-                        "path":"picking/pickNameHierarchy.html",
+                        "title":"Disable picking for some objects",
+                        "path":"picking/disablePicking.html",
                         "tags":[],
-                        "id":"pickNameHierarchy"
+                        "id":"disablePicking"
                     },
                     {
-                        "title":"Ray-pick objects with mouse",
+                        "title":"Picking through transparent objects",
+                        "path":"picking/pickThroughTransparentObject.html",
+                        "tags":["transparency"],
+                        "id":"pickThroughTransparentObject"
+                    },
+                    {
+                        "title":"Pick name hierarchies",
+                        "path":"picking/pickNameHierarchy.html",
+                        "tags":[],
+                        "id":"namePaths"
+                    },
+                    {
+                        "title":"3D ray-picking",
                         "path":"picking/rayPicking.html",
                         "tags":["rayPicking"],
                         "id":"rayPicking"
