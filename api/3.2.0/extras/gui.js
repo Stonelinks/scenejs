@@ -3,7 +3,7 @@
  * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
  *
- * Built on 2014-01-14
+ * Built on 2014-01-15
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * Copyright 2014, Lindsay Kay

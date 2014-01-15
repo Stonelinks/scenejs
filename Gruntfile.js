@@ -7,10 +7,6 @@
 
 'use strict';
 
-
-// var apiDir = "api/" + (productionBuild ? "latest" : "dev");
-var apiDir = 'api/latest/';
-
 var sjsFiles = [
 
     // Core
@@ -116,6 +112,8 @@ module.exports = function(grunt) {
     // read package.json
     var pkg = grunt.file.readJSON('package.json');
 
+    var apiDir = 'api/' + pkg.version + '/';
+
     grunt.initConfig({
 
         pkg: pkg,
@@ -198,13 +196,6 @@ module.exports = function(grunt) {
                     src: 'api',
                     dest: '_site'
                 }
-            },
-
-            apiVersionFolder: {
-                options: {
-                    src: apiDir,
-                    dest: 'api/' + pkg.version
-                }
             }
         },
 
@@ -231,7 +222,7 @@ module.exports = function(grunt) {
                 dest: apiDir + 'scenejs.js',
 
                 options: {
-                    footer: 'SceneJS.configure({ pluginPath: "/api/latest/plugins" });\n'
+                    footer: 'SceneJS.configure({ pluginPath: "/api/' + pkg.version + '/plugins" });\n'
                 }
             },
 
@@ -273,7 +264,6 @@ module.exports = function(grunt) {
 
         grunt.task.run(tasks.common);
         grunt.task.run(target == 'all' ? tasks.default.concat(tasks.amd) : tasks[target]);
-        grunt.task.run('rsync:apiVersionFolder');
     });
 
     grunt.registerTask('default', function() {
