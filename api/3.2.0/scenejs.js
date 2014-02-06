@@ -3,11 +3,7 @@
  * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
  *
-<<<<<<< HEAD
- * Built on 2014-01-15
-=======
- * Built on 2013-12-03
->>>>>>> aebe5816b99f4f24ecc78c097229aa5c5a963ce3
+ * Built on 2014-02-06
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * Copyright 2014, Lindsay Kay
@@ -17,11 +13,7 @@
 if (undefined === require) {
 
 /** vim: et:ts=4:sw=4:sts=4
-<<<<<<< HEAD
  * @license RequireJS 2.1.10 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
-=======
- * @license RequireJS 2.1.9 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
->>>>>>> aebe5816b99f4f24ecc78c097229aa5c5a963ce3
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/requirejs for details
  */
@@ -34,11 +26,7 @@ var requirejs, require, define;
 (function (global) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,
-<<<<<<< HEAD
         version = '2.1.10',
-=======
-        version = '2.1.9',
->>>>>>> aebe5816b99f4f24ecc78c097229aa5c5a963ce3
         commentRegExp = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg,
         cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
         jsSuffixRegExp = /\.js$/,
