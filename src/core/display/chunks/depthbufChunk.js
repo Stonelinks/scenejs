@@ -11,9 +11,9 @@ SceneJS_ChunkFactory.createChunkType({
     drawAndPick:function (ctx) {
 
         var enabled = this.core.enabled;
+        var gl = this.program.gl;
 
         if (ctx.depthbufEnabled != enabled) {
-            var gl = this.program.gl;
             if (enabled) {
                 gl.enable(gl.DEPTH_TEST);
             } else {
@@ -34,6 +34,16 @@ SceneJS_ChunkFactory.createChunkType({
         if (ctx.depthFunc != depthFunc) {
             gl.depthFunc(depthFunc);
             ctx.depthFunc = depthFunc;
+        }
+
+        var stateId = this.core.stateId;
+        
+        if (ctx.depthbufStateId != stateId) {
+            ctx.depthbufStateId = stateId;
+
+            if (enabled) {
+                this.program.gl.clear(this.program.gl.DEPTH_BUFFER_BIT);
+            }
         }
     }
 });

@@ -3,7 +3,11 @@
  * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
  *
+<<<<<<< HEAD
  * Built on 2014-01-15
+=======
+ * Built on 2013-12-03
+>>>>>>> aebe5816b99f4f24ecc78c097229aa5c5a963ce3
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * Copyright 2014, Lindsay Kay
@@ -13946,6 +13950,8 @@ var SceneJS_Display = function (cfg) {
      */
     this._frameCtx = {
         pickNames:[], // Pick names of objects hit during pick render
+        pickViewMats:[],
+        pickCameraMats:[],
         canvas:this._canvas            // The canvas
     };
 
@@ -14092,7 +14098,7 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
     this._setChunk(object, 8, "depthbuf", this.depthbuf);
     this._setChunk(object, 9, "colorbuf", this.colorbuf);
     this._setChunk(object, 10, "view", this.view);
-    this._setChunk(object, 11, "name", this.name);
+    this._setChunk(object, 11, "name", this.name);          // Must be after "lookAt" and "camera"
     this._setChunk(object, 12, "lights", this.lights);
     this._setChunk(object, 13, "material", this.material);
     this._setChunk(object, 14, "texture", this.texture);
@@ -14534,8 +14540,8 @@ SceneJS_Display.prototype.pick = function (params) {
             var x = (canvasX - w / 2) / (w / 2);           // Calculate clip space coordinates
             var y = -(canvasY - h / 2) / (h / 2);
 
-            var projMat = this._frameCtx.cameraMat;
-            var viewMat = this._frameCtx.viewMat;
+            var projMat = this._frameCtx.pickCameraMats[pickIndex];
+            var viewMat = this._frameCtx.pickViewMats[pickIndex];
 
             var pvMat = SceneJS.math.mulMat4(projMat, viewMat, []);
             var pvMatInverse = SceneJS.math.inverseMat4(pvMat, []);
@@ -14579,6 +14585,7 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
     frameCtx.depthbufEnabled = null;
     frameCtx.clearDepth = null;
     frameCtx.depthFunc = gl.LESS;
+    frameCtx.depthbufStateId = null;
 
     frameCtx.scissorTestEnabled = false;
 
@@ -16955,10 +16962,12 @@ SceneJS_ChunkFactory.createChunkType({
     },
 
     pick : function(ctx) {
-
         if (this._uPickColor && this.core.name) {
 
-            ctx.pickNames[ctx.pickIndex++] = this.core;
+            ctx.pickNames[ctx.pickIndex] = this.core;
+            ctx.pickViewMats[ctx.pickIndex] = ctx.viewMat;
+            ctx.pickCameraMats[ctx.pickIndex] = ctx.cameraMat;
+            ++ctx.pickIndex;
 
             var b = ctx.pickIndex >> 16 & 0xFF;
             var g = ctx.pickIndex >> 8 & 0xFF;
@@ -16968,6 +16977,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     }
 });
+
 SceneJS_ChunkFactory.createChunkType({
 
     type: "program",
@@ -17081,9 +17091,9 @@ SceneJS_ChunkFactory.createChunkType({
     drawAndPick:function (ctx) {
 
         var enabled = this.core.enabled;
+        var gl = this.program.gl;
 
         if (ctx.depthbufEnabled != enabled) {
-            var gl = this.program.gl;
             if (enabled) {
                 gl.enable(gl.DEPTH_TEST);
             } else {
@@ -17104,6 +17114,16 @@ SceneJS_ChunkFactory.createChunkType({
         if (ctx.depthFunc != depthFunc) {
             gl.depthFunc(depthFunc);
             ctx.depthFunc = depthFunc;
+        }
+
+        var stateId = this.core.stateId;
+        
+        if (ctx.depthbufStateId != stateId) {
+            ctx.depthbufStateId = stateId;
+
+            if (enabled) {
+                this.program.gl.clear(this.program.gl.DEPTH_BUFFER_BIT);
+            }
         }
     }
 });
