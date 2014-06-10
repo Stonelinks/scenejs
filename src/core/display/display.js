@@ -886,7 +886,6 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
 
     var gl = this._canvas.gl;
 
-    frameCtx.program = null;
     frameCtx.framebuf = null;
     frameCtx.viewMat = null;
     frameCtx.modelMat = null;
@@ -961,10 +960,6 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
     }
 
     gl.flush();                                                         // Flush GL
-
-    if (frameCtx.program) {                                                  // Unbind remaining program
-        //frameCtx.program.unbind();
-    }
 
     if (frameCtx.framebuf) {                                                 // Unbind remaining frame buffer
         gl.finish();
