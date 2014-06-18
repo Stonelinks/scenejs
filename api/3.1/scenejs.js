@@ -5178,7 +5178,7 @@ SceneJS_webgl_Program.prototype.setUniform = function (name, value) {
 
 var SceneJS_webgl_Texture2D = function (gl, cfg) {
 
-    this.target = gl.TEXTURE_2D;
+    this.target = cfg.target || gl.TEXTURE_2D;
     this.minFilter = cfg.minFilter;
     this.magFilter = cfg.magFilter;
     this.wrapS = cfg.wrapS;
@@ -5195,26 +5195,26 @@ var SceneJS_webgl_Texture2D = function (gl, cfg) {
         gl.bindTexture(this.target, this.texture);
 
         if (cfg.minFilter) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, cfg.minFilter);
+            gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, cfg.minFilter);
         }
 
         if (cfg.magFilter) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, cfg.magFilter);
+            gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, cfg.magFilter);
         }
 
         if (cfg.wrapS) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, cfg.wrapS);
+            gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, cfg.wrapS);
         }
 
         if (cfg.wrapT) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, cfg.wrapT);
+            gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, cfg.wrapT);
         }
 
         if (cfg.minFilter == gl.NEAREST_MIPMAP_NEAREST ||
             cfg.minFilter == gl.LINEAR_MIPMAP_NEAREST ||
             cfg.minFilter == gl.NEAREST_MIPMAP_LINEAR ||
             cfg.minFilter == gl.LINEAR_MIPMAP_LINEAR) {
-            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.generateMipmap(this.target);
         }
 
         gl.bindTexture(this.target, null);
@@ -5634,7 +5634,7 @@ var SceneJS_sceneStatusModule = new (function () {
      */
     this.taskStarted = function (node, description) {
 
-        var popups = !!SceneJS_configsModule.configs.statusPopups;
+        var popups = SceneJS_configsModule.configs.statusPopups !== false;
 
         var scene = node.getScene();
         var sceneId = scene.getId();
@@ -5733,10 +5733,9 @@ var SceneJS_sceneStatusModule = new (function () {
         if (!task) {
             return null;
         }
-        var popups = !!SceneJS_configsModule.configs.statusPopups;
         var sceneState = task.sceneState;
         this.sceneStatus[sceneState.sceneId].numTasks--;
-        if (popups) {
+        if (task.element) {
             dismissPopup(task.element);
         }
         var nodeState = task.nodeState;
@@ -9254,7 +9253,13 @@ new (function() {
             uvBuf2:core.uvBuf2,
             colorBuf:core.colorBuf,
             interleavedBuf:core.interleavedBuf,
-            indexBuf:core.indexBuf
+            indexBuf:core.indexBuf,
+            interleavedStride:core.interleavedStride,
+            interleavedPositionOffset:core.interleavedPositionOffset,
+            interleavedNormalOffset:core.interleavedNormalOffset,
+            interleavedUVOffset:core.interleavedUVOffset,
+            interleavedUV2Offset:core.interleavedUV2Offset,
+            interleavedColorOffset:core.interleavedColorOffset
         };
 
         for (var i = stackLen - 1; i >= 0; i--) {
@@ -9266,6 +9271,12 @@ new (function() {
                 core2.uvBuf2 = coreStack[i].uvBuf2;
                 core2.colorBuf = coreStack[i].colorBuf;
                 core2.interleavedBuf = coreStack[i].interleavedBuf;
+                core2.interleavedStride = coreStack[i].interleavedStride;
+                core2.interleavedPositionOffset = coreStack[i].interleavedPositionOffset;
+                core2.interleavedNormalOffset = coreStack[i].interleavedNormalOffset;
+                core2.interleavedUVOffset = coreStack[i].interleavedUVOffset;
+                core2.interleavedUV2Offset = coreStack[i].interleavedUV2Offset;
+                core2.interleavedColorOffset = coreStack[i].interleavedColorOffset;
                 return core2;
             }
         }
@@ -12379,8 +12390,6 @@ new (function() {
  */
 new (function () {
 
-    var imageBasePath = window.location.hostname + window.location.pathname;
-
     // The default state core singleton for {@link SceneJS.Texture} nodes
     var defaultCore = {
         type:"texture",
@@ -12594,6 +12603,7 @@ new (function () {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, self._ensureImageSizePowerOfTwo(image));
                 self._setLayerTexture(gl, layer, texture);
                 SceneJS_sceneStatusModule.taskFinished(taskId);
+                self._engine.display.imageDirty = true;
             };
 
             image.onerror = function () {
@@ -12860,6 +12870,129 @@ new (function () {
             }
         }
     };
+
+})();(function () {
+
+    // The default state core singleton for {@link SceneJS.ColorBuf} nodes
+    var defaultCore = {
+        type: "cubemap",
+        stateId: SceneJS._baseStateId++,
+        empty: true,
+        texture: null,
+        hash:""
+    };
+
+    var coreStack = [];
+    var stackLen = 0;
+
+    SceneJS_events.addListener(
+        SceneJS_events.SCENE_COMPILING,
+        function (params) {
+            params.engine.display.cubemap = defaultCore;
+            stackLen = 0;
+        });
+
+    /**
+     * @class Scene graph node which configures the color buffer for its subgraph
+     * @extends SceneJS.Node
+     */
+    SceneJS.CubeMap = SceneJS_NodeFactory.createNodeType("cubemap");
+
+    SceneJS.CubeMap.prototype._init = function (params) {
+        if (this._core.useCount == 1) { // This node is first to reference the state core, so sets it up
+            this._core.hash = "y";
+            var self = this;
+            var gl = this._engine.canvas.gl;
+            var texture = gl.createTexture();
+            var faces = [
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X,
+                gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
+                gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
+                gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+            ];
+            var taskId = SceneJS_sceneStatusModule.taskStarted(this, "Loading cubemap texture");
+            var numImagesLoaded = 0;
+            var loadFailed = false;
+            for (var i = 0; i < faces.length; i++) {
+                var face = faces[i];
+                var image = new Image();
+                image.onload = function (face, image) {
+                    return function () {
+                        if (loadFailed) {
+                            return;
+                        }
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+                        gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, ensureImageSizePowerOfTwo(image));
+                        //self._core.texture = texture;
+                        //gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,  ensureImageSizePowerOfTwo(image));
+                        if (++numImagesLoaded == faces.length) {
+                            self._core.texture = new SceneJS_webgl_Texture2D(gl, {
+                                texture:texture,
+                                target: gl.TEXTURE_CUBE_MAP,
+                                minFilter:gl.LINEAR,
+                                magFilter:gl.LINEAR,
+                                wrapS:gl.CLAMP_TO_EDGE,
+                                wrapT:gl.CLAMP_TO_EDGE
+                            });
+                            SceneJS_sceneStatusModule.taskFinished(taskId);
+                            self._engine.display.imageDirty = true;
+                        }
+                    }
+                }(face, image);
+                image.onerror = function () {
+                    loadFailed = true;
+                    SceneJS_sceneStatusModule.taskFailed(taskId);
+                };
+                image.src = params.src[i];
+            }
+        }
+    };
+
+    function ensureImageSizePowerOfTwo (image) {
+        if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
+            var canvas = document.createElement("canvas");
+            canvas.width = nextHighestPowerOfTwo(image.width);
+            canvas.height = nextHighestPowerOfTwo(image.height);
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(image,
+                0, 0, image.width, image.height,
+                0, 0, canvas.width, canvas.height);
+
+            image = canvas;
+            image.crossOrigin = "";
+        }
+        return image;
+    }
+
+    function isPowerOfTwo(x) {
+        return (x & (x - 1)) == 0;
+    }
+
+    function nextHighestPowerOfTwo(x) {
+        --x;
+        for (var i = 1; i < 32; i <<= 1) {
+            x = x | x >> i;
+        }
+        return x + 1;
+    }
+
+    SceneJS.CubeMap.prototype._compile = function (ctx) {
+        this._engine.display.cubemap = coreStack[stackLen++] = this._core;
+        this._compileNodes(ctx);
+        this._engine.display.cubemap = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
+    };
+
+    SceneJS.CubeMap.prototype._destroy = function () {
+        if (this._core.useCount == 1) { // Last resource user
+            if (this._core.texture) {
+                this._engine.display.gl.deleteTexture(this._core.texture);
+                this._core.texture = null;
+            }
+        }
+    }
 
 })();/**
  * @class Scene graph node which defines the modelling transform to apply to the objects in its subgraph
@@ -13899,6 +14032,12 @@ var SceneJS_Display = function (cfg) {
     this.texture = null;
 
     /**
+     * Node state core for the last {@link SceneJS.CubeMap} visited during scene graph compilation traversal
+     * @type Object
+     */
+    this.cubemap = null;
+
+    /**
      * Node state core for the last {@link SceneJS.XForm} visited during scene graph compilation traversal
      * @type Object
      */
@@ -14118,6 +14257,7 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
 
     object.layer = this.layer;
     object.texture = this.texture;
+    object.cubemap = this.cubemap;
     object.geometry = this.geometry;
     object.enable = this.enable;
     object.flags = this.flags;
@@ -14131,6 +14271,7 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
         this.clips.hash,
         this.morphGeometry.hash,
         this.texture.hash,
+        this.cubemap.hash,
         this.lights.hash
 
     ]).join(";");
@@ -14166,11 +14307,12 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
     this._setChunk(object, 12, "lights", this.lights);
     this._setChunk(object, 13, "material", this.material);
     this._setChunk(object, 14, "texture", this.texture);
-    this._setChunk(object, 15, "framebuf", this.framebuf);
-    this._setChunk(object, 16, "clips", this.clips);
-    this._setChunk(object, 17, "morphGeometry", this.morphGeometry);
-    this._setChunk(object, 18, "listeners", this.renderListeners);      // Must be after the above chunks
-    this._setChunk(object, 19, "geometry", this.geometry); // Must be last
+    this._setChunk(object, 15, "cubemap", this.cubemap);
+    this._setChunk(object, 16, "framebuf", this.framebuf);
+    this._setChunk(object, 17, "clips", this.clips);
+    this._setChunk(object, 18, "morphGeometry", this.morphGeometry);
+    this._setChunk(object, 19, "listeners", this.renderListeners);      // Must be after the above chunks
+    this._setChunk(object, 20, "geometry", this.geometry); // Must be last
 };
 
 SceneJS_Display.prototype._setChunk = function (object, order, chunkType, core, unique) {
@@ -14341,10 +14483,9 @@ SceneJS_Display.prototype._makeStateSortKeys = function () { // TODO: state sort
     for (var i = 0, len = this._objectListLen; i < len; i++) {
         object = this._objectList[i];
         object.sortKey = object.program
-            ? (((object.layer.priority + 1) * 100000000)
-            + ((object.program.id + 1) * 100000)
-            + (object.texture.stateId * 1000))
-            //    + i // Force stability among same-priority objects across multiple sorts
+            ? (((object.layer.priority + 1) * 1000000)
+            + ((object.program.id + 1) * 1000)
+            + (object.texture.stateId))
             : -1;   // Non-visual object (eg. sound)
     }
 };
@@ -14491,7 +14632,7 @@ SceneJS_Display.prototype._buildDrawList = function () {
 
     if (this._xpBufLen > 0) {
 
-        for (var i = 0; i < 22; i++) {  // TODO: magic number!
+        for (var i = 0; i < 23; i++) {  // TODO: magic number!
             this._lastStateId[i] = null;
         }
 
@@ -14666,6 +14807,7 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
     frameCtx.backfaces = true;
     frameCtx.frontface = "ccw";
     frameCtx.pick = !!pick;
+    frameCtx.textureUnit = 0;
 
     frameCtx.lineWidth = 1;
 
@@ -15377,6 +15519,10 @@ var SceneJS_ProgramSourceFactory = new (function () {
             }
         }
 
+        if (!states.cubemap.empty && normals) {
+            src.push("uniform samplerCube SCENEJS_uEnvSampler;");
+        }
+
         /* True when lighting
          */
         src.push("uniform bool  SCENEJS_uBackfaceTexturing;");
@@ -15405,7 +15551,7 @@ var SceneJS_ProgramSourceFactory = new (function () {
         src.push("uniform float SCENEJS_uMaterialSpecular;");
         src.push("uniform float SCENEJS_uMaterialShine;");
 
-        src.push("varying vec3 SCENEJS_vWorldEyeVec;");                          // Direction of view-space vertex from eye
+        src.push("varying vec3 SCENEJS_vWorldEyeVec;");                          // Direction of world-space vertex from eye
 
         if (normals) {
 
@@ -15608,6 +15754,14 @@ var SceneJS_ProgramSourceFactory = new (function () {
                 src.push("}");
             }
         }
+
+        if (!states.cubemap.empty && normals) {
+            src.push("vec3 envLookup = reflect(normalize(SCENEJS_vWorldEyeVec), normalize(SCENEJS_vWorldNormal));");
+            src.push("envLookup.y = envLookup.y * -1.0;");
+            src.push("vec4 envColor = textureCube(SCENEJS_uEnvSampler, envLookup);");
+            src.push("color = color * envColor.rgb;");
+        }
+
 
         src.push("  vec4    fragColor;");
 
@@ -15875,12 +16029,6 @@ var SceneJS_Program = function(id, hash, source, gl) {
      */
     this.useCount = 0;
 
-    /**
-     * Current draw uniform state cached as a bitfield to avoid costly extra uniform1i calls
-     * @type Number
-     */
-    this.drawUniformFlags = 0;
-
     this.build(gl);
 };
 
@@ -15889,6 +16037,12 @@ var SceneJS_Program = function(id, hash, source, gl) {
  * This is also re-called to re-create them after WebGL context loss.
  */
 SceneJS_Program.prototype.build = function(gl) {
+    /**
+     * Current draw uniform state cached as a bitfield to avoid costly extra uniform1i calls
+     * @type Number
+     */
+    this.drawUniformFlags = 0;
+
     this.gl = gl;
     this.draw = new SceneJS_webgl_Program(gl, [this.source.drawVertexSrc.join("\n")], [this.source.drawFragmentSrc.join("\n")]);
     this.pick = new SceneJS_webgl_Program(gl, [this.source.pickVertexSrc.join("\n")], [this.source.pickFragmentSrc.join("\n")]);
@@ -17086,6 +17240,7 @@ SceneJS_ChunkFactory.createChunkType({
         frameCtx.uvBuf = false;
         frameCtx.uvBuf2 = false;
         frameCtx.colorBuf = false;
+        frameCtx.textureUnit = 0;
 
         frameCtx.geoChunkId = null; // HACK until we have distinct state chunks for VBOs and draw call
 
@@ -17114,6 +17269,7 @@ SceneJS_ChunkFactory.createChunkType({
         frameCtx.uvBuf = false;
         frameCtx.uvBuf2 = false;
         frameCtx.colorBuf = false;
+        frameCtx.textureUnit = 0;
 
         frameCtx.geoChunkId = null; // HACK until we have distinct state chunks for VBOs and draw call
 
@@ -17361,7 +17517,7 @@ SceneJS_ChunkFactory.createChunkType({
         }
     },
 
-    draw : function() {
+    draw : function(ctx) {
 
         var layers = this.core.layers;
 
@@ -17376,7 +17532,11 @@ SceneJS_ChunkFactory.createChunkType({
 
                 if (this._uTexSampler[i] && layer.texture) {    // Lazy-loads
 
-                    draw.bindTexture(this._uTexSampler[i], layer.texture, i);
+                    draw.bindTexture(this._uTexSampler[i], layer.texture, ctx.textureUnit++);
+
+                    if (layer._matrixDirty && layer.buildMatrix) {
+                        layer.buildMatrix.call(layer);
+                    }
 
                     if (this._uTexMatrix[i]) {
                         this._uTexMatrix[i].setValue(layer.matrixAsArray);
@@ -17390,6 +17550,15 @@ SceneJS_ChunkFactory.createChunkType({
                    //   draw.bindTexture(this._uTexSampler[i], null, i); // Unbind
                 }
             }
+        }
+    }
+});SceneJS_ChunkFactory.createChunkType({
+
+    type: "cubemap",
+
+    draw: function (ctx) {
+        if (this.core.texture) {
+            this.program.draw.bindTexture("SCENEJS_uEnvSampler", this.core.texture, ctx.textureUnit++);
         }
     }
 });SceneJS_ChunkFactory.createChunkType({
