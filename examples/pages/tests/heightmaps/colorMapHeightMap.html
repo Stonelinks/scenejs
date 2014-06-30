@@ -1,18 +1,31 @@
----
-layout: example
-base_url: "../../../../"
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SceneJS Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-<script src="{{ page.base_url }}api/latest/scenejs.js"></script>
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+</head>
+<body>
+
+<script src="../../../../api/latest/scenejs.js"></script>
 
 <script>
 
-    // Demo of the "heightmaps/custom" custom node type with a video texture,
-    // plus an "effects/fog" node thrown in for fun.
+    // Demo of the "heightmaps/custom" custom node type.
 
     // Point SceneJS to the bundled plugins
     SceneJS.setConfigs({
-        pluginPath:"{{ page.base_url }}api/latest/plugins"
+        pluginPath:"../../../../api/latest/plugins"
     });
 
     // Create a scene
@@ -39,7 +52,7 @@ base_url: "../../../../"
                                 type:"texture",
                                 layers:[
                                     {
-                                        src:"{{ page.base_url }}assets/textures/superman.jpg"
+                                        src:"../../../textures/superman.jpg"
                                     }
                                 ],
                                 nodes:[
@@ -57,7 +70,7 @@ base_url: "../../../../"
                                         // Dimensions
                                         xSize:1000,
                                         zSize:1000,
-                                        ySize:50,
+                                        ySize:200,
 
                                         // Segments on X and Z axis
                                         xSegments:10,
@@ -72,4 +85,5 @@ base_url: "../../../../"
     );
 
 </script>
-
+</body>
+</html>
