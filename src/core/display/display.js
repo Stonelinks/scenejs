@@ -84,6 +84,12 @@ var SceneJS_Display = function (cfg) {
     this._chunkFactory = new SceneJS_ChunkFactory();
 
     /**
+     * True when the background is to be transparent
+     * @type {boolean}
+     */
+    this.transparent = cfg.transparent === true;
+
+    /**
      * Node state core for the last {@link SceneJS.Enable} visited during scene graph compilation traversal
      * @type Object
      */
@@ -144,7 +150,7 @@ var SceneJS_Display = function (cfg) {
     this.texture = null;
 
     /**
-     * Node state core for the last {@link SceneJS.CubeMap} visited during scene graph compilation traversal
+     * Node state core for the last {@link SceneJS.Reflect} visited during scene graph compilation traversal
      * @type Object
      */
     this.cubemap = null;
@@ -267,9 +273,8 @@ var SceneJS_Display = function (cfg) {
      */
     this._frameCtx = {
         pickNames:[], // Pick names of objects hit during pick render
-        pickViewMats:[],
-        pickCameraMats:[],
-        canvas:this._canvas            // The canvas
+        canvas:this._canvas,           // The canvas
+        VAO:null // Vertex array object extension
     };
 
     /* The frame context has this facade which is given to scene node "rendered" listeners
@@ -417,7 +422,7 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
     this._setChunk(object, 8, "depthbuf", this.depthbuf);
     this._setChunk(object, 9, "colorbuf", this.colorbuf);
     this._setChunk(object, 10, "view", this.view);
-    this._setChunk(object, 11, "name", this.name);          // Must be after "lookAt" and "camera"
+    this._setChunk(object, 11, "name", this.name);
     this._setChunk(object, 12, "lights", this.lights);
     this._setChunk(object, 13, "material", this.material);
     this._setChunk(object, 14, "texture", this.texture);
@@ -434,12 +439,7 @@ SceneJS_Display.prototype._setChunk = function (object, order, chunkType, core, 
     var chunkId;
     var chunkClass = this._chunkFactory.chunkTypes[chunkType];
 
-    if (chunkClass.unique) {
-
-        // Suppress run culling for this core type
-        chunkId = core.stateId + 1;
-
-    } else if (core) {
+    if (core) {
 
         // Core supplied
         if (core.empty) { // Only set default cores for state types that have them
@@ -455,15 +455,18 @@ SceneJS_Display.prototype._setChunk = function (object, order, chunkType, core, 
             return;
         }
 
-        chunkId = chunkClass.programGlobal
-            ? core.stateId + 1
-            : ((object.program.id + 1) * 50000) + core.stateId + 1;
+        // Note that core.stateId can be either a number or a string, that's why we make
+        // chunkId a string here. String stateId can come from at least nodeEvents.js.
+        // TODO: Would it be better if all were numbers?
+        chunkId = chunkClass.prototype.programGlobal
+            ? '_' + core.stateId
+            : 'p' + object.program.id + '_' + core.stateId;
 
     } else {
 
         // No core supplied, probably a program.
         // Only one chunk of this type per program.
-        chunkId = ((object.program.id + 1) * 50000);
+        chunkId = 'p' + object.program.id;
     }
 
     var oldChunk = object.chunks[order];
@@ -496,9 +499,6 @@ SceneJS_Display.prototype._setAmbient = function (core) {
             this._ambientColor[0] = light.color[0];
             this._ambientColor[1] = light.color[1];
             this._ambientColor[2] = light.color[2];
-            if (light.color.length === 4) {
-                this._ambientColor[3] = light.color[3];
-            }
         }
     }
 };
@@ -864,8 +864,8 @@ SceneJS_Display.prototype.pick = function (params) {
             var x = (canvasX - w / 2) / (w / 2);           // Calculate clip space coordinates
             var y = -(canvasY - h / 2) / (h / 2);
 
-            var projMat = this._frameCtx.pickCameraMats[pickIndex];
-            var viewMat = this._frameCtx.pickViewMats[pickIndex];
+            var projMat = this._frameCtx.cameraMat;
+            var viewMat = this._frameCtx.viewMat;
 
             var pvMat = SceneJS.math.mulMat4(projMat, viewMat, []);
             var pvMatInverse = SceneJS.math.inverseMat4(pvMat, []);
@@ -908,7 +908,6 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
     frameCtx.depthbufEnabled = null;
     frameCtx.clearDepth = null;
     frameCtx.depthFunc = gl.LESS;
-    frameCtx.depthbufStateId = null;
 
     frameCtx.scissorTestEnabled = false;
 
@@ -928,8 +927,19 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
 
     frameCtx.transparencyPass = false;
 
+    // The extension needs to be re-queried in case the context was lost and
+    // has been recreated.
+    var VAO = gl.getExtension("OES_vertex_array_object");
+    if (VAO) {
+        frameCtx.VAO = VAO;
+    }
+
     gl.viewport(0, 0, this._canvas.canvas.width, this._canvas.canvas.height);
-    gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], this._ambientColor[3]);
+    if (this.transparent) {
+        gl.clearColor(0,0,0,0);
+    } else {
+        gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], 1.0);
+    }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
     gl.frontFace(gl.CCW);
     gl.disable(gl.CULL_FACE);

@@ -57,7 +57,7 @@ var sjsFiles = [
     'src/core/scene/style.js',
     'src/core/scene/tag.js',
     'src/core/scene/texture.js',
-    'src/core/scene/cubemap.js',
+    'src/core/scene/reflect.js',
     'src/core/scene/xform.js',
     'src/core/scene/matrix.js',
     'src/core/scene/rotate.js',
