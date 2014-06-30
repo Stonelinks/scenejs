@@ -3,7 +3,7 @@
  * WebGL Scene Graph Library for JavaScript
  * http://scenejs.org/
  *
- * Built on 2014-06-18
+ * Built on 2014-06-30
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * Copyright 2014, Lindsay Kay
@@ -1798,7 +1798,8 @@ var SceneJS_Engine = function (json, options) {
      * @type SceneJS_Display
      */
     this.display = new SceneJS_Display({
-        canvas:this.canvas
+        canvas:this.canvas,
+        transparent: json.transparent
     });
 
     /**
@@ -7986,7 +7987,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
         backfaceTexturing: true,    // Texturing enabled for backfaces
         diffuse: true,              // Diffuse lighting enabled
         specular: true,             // Specular lighting enabled
-        ambient: true               // Ambient lighting enabled
+        ambient: true,              // Ambient lighting enabled
+        reflection : true           // Reflection enabled by default
     };
 
     var coreStack = [];
@@ -8020,6 +8022,7 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
             this._core.diffuse = true;           // Diffuse lighting enabled by default
             this._core.specular = true;          // Specular lighting enabled by default
             this._core.ambient = true;           // Ambient lighting enabled by default
+            this._core.reflection = true;           // Reflection enabled by default
 
             if (params.flags) {                 // 'flags' property is actually optional in the node definition
                 this.setFlags(params.flags);
@@ -8085,6 +8088,11 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
             core.ambient = !!flags.ambient;
             this._engine.display.imageDirty = true;
         }
+        
+        if (flags.reflection != undefined) {
+            core.reflection = !!flags.reflection;
+            this._engine.display.imageDirty = true;
+        }
 
         return this;
     };
@@ -8116,7 +8124,8 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
             specular: core.specular,
             ambient: core.ambient,
             backfaceLighting: core.backfaceLighting,
-            backfaceTexturing: core.backfaceTexturing
+            backfaceTexturing: core.backfaceTexturing,
+            reflection: core.reflection
         };
     };
 
@@ -8260,6 +8269,19 @@ SceneJS_NodeFactory.prototype.putNode = function (node) {
 
     SceneJS.Flags.prototype.getAmbient = function() {
         return this._core.ambient;
+    };
+
+    SceneJS.Flags.prototype.setReflection = function(reflection) {
+        reflection = !!reflection;
+        if (this._core.reflection != reflection) {
+            this._core.reflection = reflection;
+            this._engine.display.imageDirty = true;
+        }
+        return this;
+    };
+
+    SceneJS.Flags.prototype.getReflection = function() {
+        return this._core.reflection;
     };
 
     SceneJS.Flags.prototype._compile = function(ctx) {
@@ -11744,6 +11766,12 @@ SceneJS.Scene.prototype._init = function (params) {
     }
 
     this._tagSelector = null;
+
+    /**
+     * Set false when canvas is to be transparent.
+     * @type {boolean}
+     */
+    this.transparent = (params.transparent === true);
 };
 
 
@@ -12392,8 +12420,6 @@ new (function() {
  */
 new (function () {
 
-    var imageBasePath = window.location.hostname + window.location.pathname;
-
     // The default state core singleton for {@link SceneJS.Texture} nodes
     var defaultCore = {
         type:"texture",
@@ -12472,7 +12498,8 @@ new (function () {
                         layerParams.applyTo != "specular" && // Specular map
                         layerParams.applyTo != "emit" && // Emission map
                         layerParams.applyTo != "alpha" && // Alpha map
-                        layerParams.applyTo != "normals") {
+                        layerParams.applyTo != "normals" && // Normal map
+                        layerParams.applyTo != "shine") { // Shininess map
                         throw SceneJS_error.fatalError(
                             SceneJS.errors.NODE_CONFIG_EXPECTED,
                             "texture layer " + i + " applyTo value is unsupported - " +
@@ -12607,6 +12634,7 @@ new (function () {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, self._ensureImageSizePowerOfTwo(image));
                 self._setLayerTexture(gl, layer, texture);
                 SceneJS_sceneStatusModule.taskFinished(taskId);
+                self._engine.display.imageDirty = true;
             };
 
             image.onerror = function () {
@@ -12884,7 +12912,7 @@ new (function () {
         stateId: SceneJS._baseStateId++,
         empty: true,
         texture: null,
-        hash:""
+        hash: ""
     };
 
     var coreStack = [];
@@ -12901,11 +12929,23 @@ new (function () {
      * @class Scene graph node which configures the color buffer for its subgraph
      * @extends SceneJS.Node
      */
-    SceneJS.CubeMap = SceneJS_NodeFactory.createNodeType("cubemap");
+    SceneJS.Reflect = SceneJS_NodeFactory.createNodeType("reflect");
 
-    SceneJS.CubeMap.prototype._init = function (params) {
+    SceneJS.Reflect.prototype._init = function (params) {
         if (this._core.useCount == 1) { // This node is first to reference the state core, so sets it up
             this._core.hash = "y";
+
+            if (params.blendMode) {
+                if (params.blendMode != "add" && params.blendMode != "multiply") {
+                    throw SceneJS_error.fatalError(
+                        SceneJS.errors.NODE_CONFIG_EXPECTED,
+                        "reflection blendMode value is unsupported - " +
+                            "should be either 'add' or 'multiply'");
+                }
+            }
+            this._core.blendMode = params.blendMode || "multiply";
+            this._core.intensity = (params.intensity != undefined && params.intensity != null) ? params.intensity : 1.0;
+            this._core.applyTo = "reflect";
             var self = this;
             var gl = this._engine.canvas.gl;
             var texture = gl.createTexture();
@@ -12917,7 +12957,7 @@ new (function () {
                 gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
                 gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
             ];
-            var taskId = SceneJS_sceneStatusModule.taskStarted(this, "Loading cubemap texture");
+            var taskId = SceneJS_sceneStatusModule.taskStarted(this, "Loading reflection texture");
             var numImagesLoaded = 0;
             var loadFailed = false;
             for (var i = 0; i < faces.length; i++) {
@@ -12935,12 +12975,12 @@ new (function () {
                         //gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,  ensureImageSizePowerOfTwo(image));
                         if (++numImagesLoaded == faces.length) {
                             self._core.texture = new SceneJS_webgl_Texture2D(gl, {
-                                texture:texture,
+                                texture: texture,
                                 target: gl.TEXTURE_CUBE_MAP,
-                                minFilter:gl.LINEAR,
-                                magFilter:gl.LINEAR,
-                                wrapS:gl.CLAMP_TO_EDGE,
-                                wrapT:gl.CLAMP_TO_EDGE
+                                minFilter: gl.LINEAR,
+                                magFilter: gl.LINEAR,
+                                wrapS: gl.CLAMP_TO_EDGE,
+                                wrapT: gl.CLAMP_TO_EDGE
                             });
                             SceneJS_sceneStatusModule.taskFinished(taskId);
                             self._engine.display.imageDirty = true;
@@ -12956,7 +12996,7 @@ new (function () {
         }
     };
 
-    function ensureImageSizePowerOfTwo (image) {
+    function ensureImageSizePowerOfTwo(image) {
         if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
             var canvas = document.createElement("canvas");
             canvas.width = nextHighestPowerOfTwo(image.width);
@@ -12984,18 +13024,52 @@ new (function () {
         return x + 1;
     }
 
-    SceneJS.CubeMap.prototype._compile = function (ctx) {
-        this._engine.display.cubemap = coreStack[stackLen++] = this._core;
+    SceneJS.Reflect.prototype._compile = function (ctx) {
+        if (!this.__core) {
+            this.__core = this._engine._coreFactory.getCore("cubemap");
+        }
+        var parentCore = this._engine.display.cubemap;
+        if (!this._core.empty) {
+            this.__core.layers = (parentCore && parentCore.layers) ? parentCore.layers.concat([this._core]) : [this._core];
+        }
+        this._makeHash(this.__core);
+        coreStack[stackLen++] = this.__core;
+        this._engine.display.cubemap = this.__core;
         this._compileNodes(ctx);
         this._engine.display.cubemap = (--stackLen > 0) ? coreStack[stackLen - 1] : defaultCore;
     };
 
-    SceneJS.CubeMap.prototype._destroy = function () {
+    SceneJS.Reflect.prototype._makeHash = function (core) {
+        var hash;
+        if (core.layers && core.layers.length > 0) {
+            var layers = core.layers;
+            var hashParts = [];
+            var texLayer;
+            for (var i = 0, len = layers.length; i < len; i++) {
+                texLayer = layers[i];
+                hashParts.push("/");
+                hashParts.push(texLayer.applyTo);
+                hashParts.push("/");
+                hashParts.push(texLayer.blendMode);
+            }
+            hash = hashParts.join("");
+        } else {
+            hash = "";
+        }
+        if (core.hash != hash) {
+            core.hash = hash;
+        }
+    };
+
+    SceneJS.Reflect.prototype._destroy = function () {
         if (this._core.useCount == 1) { // Last resource user
             if (this._core.texture) {
-                this._engine.display.gl.deleteTexture(this._core.texture);
+                this._core.texture.destroy();
                 this._core.texture = null;
             }
+        }
+        if (this._core) {
+            this._coreFactory.putCore(this._core);
         }
     }
 
@@ -13985,6 +14059,12 @@ var SceneJS_Display = function (cfg) {
     this._chunkFactory = new SceneJS_ChunkFactory();
 
     /**
+     * True when the background is to be transparent
+     * @type {boolean}
+     */
+    this.transparent = cfg.transparent === true;
+
+    /**
      * Node state core for the last {@link SceneJS.Enable} visited during scene graph compilation traversal
      * @type Object
      */
@@ -14045,7 +14125,7 @@ var SceneJS_Display = function (cfg) {
     this.texture = null;
 
     /**
-     * Node state core for the last {@link SceneJS.CubeMap} visited during scene graph compilation traversal
+     * Node state core for the last {@link SceneJS.Reflect} visited during scene graph compilation traversal
      * @type Object
      */
     this.cubemap = null;
@@ -14168,9 +14248,8 @@ var SceneJS_Display = function (cfg) {
      */
     this._frameCtx = {
         pickNames:[], // Pick names of objects hit during pick render
-        pickViewMats:[],
-        pickCameraMats:[],
-        canvas:this._canvas            // The canvas
+        canvas:this._canvas,           // The canvas
+        VAO:null // Vertex array object extension
     };
 
     /* The frame context has this facade which is given to scene node "rendered" listeners
@@ -14318,7 +14397,7 @@ SceneJS_Display.prototype.buildObject = function (objectId) {
     this._setChunk(object, 8, "depthbuf", this.depthbuf);
     this._setChunk(object, 9, "colorbuf", this.colorbuf);
     this._setChunk(object, 10, "view", this.view);
-    this._setChunk(object, 11, "name", this.name);          // Must be after "lookAt" and "camera"
+    this._setChunk(object, 11, "name", this.name);
     this._setChunk(object, 12, "lights", this.lights);
     this._setChunk(object, 13, "material", this.material);
     this._setChunk(object, 14, "texture", this.texture);
@@ -14335,12 +14414,7 @@ SceneJS_Display.prototype._setChunk = function (object, order, chunkType, core, 
     var chunkId;
     var chunkClass = this._chunkFactory.chunkTypes[chunkType];
 
-    if (chunkClass.unique) {
-
-        // Suppress run culling for this core type
-        chunkId = core.stateId + 1;
-
-    } else if (core) {
+    if (core) {
 
         // Core supplied
         if (core.empty) { // Only set default cores for state types that have them
@@ -14356,15 +14430,18 @@ SceneJS_Display.prototype._setChunk = function (object, order, chunkType, core, 
             return;
         }
 
-        chunkId = chunkClass.programGlobal
-            ? core.stateId + 1
-            : ((object.program.id + 1) * 50000) + core.stateId + 1;
+        // Note that core.stateId can be either a number or a string, that's why we make
+        // chunkId a string here. String stateId can come from at least nodeEvents.js.
+        // TODO: Would it be better if all were numbers?
+        chunkId = chunkClass.prototype.programGlobal
+            ? '_' + core.stateId
+            : 'p' + object.program.id + '_' + core.stateId;
 
     } else {
 
         // No core supplied, probably a program.
         // Only one chunk of this type per program.
-        chunkId = ((object.program.id + 1) * 50000);
+        chunkId = 'p' + object.program.id;
     }
 
     var oldChunk = object.chunks[order];
@@ -14397,9 +14474,6 @@ SceneJS_Display.prototype._setAmbient = function (core) {
             this._ambientColor[0] = light.color[0];
             this._ambientColor[1] = light.color[1];
             this._ambientColor[2] = light.color[2];
-            if (light.color.length === 4) {
-                this._ambientColor[3] = light.color[3];
-            }
         }
     }
 };
@@ -14765,8 +14839,8 @@ SceneJS_Display.prototype.pick = function (params) {
             var x = (canvasX - w / 2) / (w / 2);           // Calculate clip space coordinates
             var y = -(canvasY - h / 2) / (h / 2);
 
-            var projMat = this._frameCtx.pickCameraMats[pickIndex];
-            var viewMat = this._frameCtx.pickViewMats[pickIndex];
+            var projMat = this._frameCtx.cameraMat;
+            var viewMat = this._frameCtx.viewMat;
 
             var pvMat = SceneJS.math.mulMat4(projMat, viewMat, []);
             var pvMatInverse = SceneJS.math.inverseMat4(pvMat, []);
@@ -14809,7 +14883,6 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
     frameCtx.depthbufEnabled = null;
     frameCtx.clearDepth = null;
     frameCtx.depthFunc = gl.LESS;
-    frameCtx.depthbufStateId = null;
 
     frameCtx.scissorTestEnabled = false;
 
@@ -14829,8 +14902,19 @@ SceneJS_Display.prototype._doDrawList = function (pick, rayPick) {
 
     frameCtx.transparencyPass = false;
 
+    // The extension needs to be re-queried in case the context was lost and
+    // has been recreated.
+    var VAO = gl.getExtension("OES_vertex_array_object");
+    if (VAO) {
+        frameCtx.VAO = VAO;
+    }
+
     gl.viewport(0, 0, this._canvas.canvas.width, this._canvas.canvas.height);
-    gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], this._ambientColor[3]);
+    if (this.transparent) {
+        gl.clearColor(0,0,0,0);
+    } else {
+        gl.clearColor(this._ambientColor[0], this._ambientColor[1], this._ambientColor[2], 1.0);
+    }
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
     gl.frontFace(gl.CCW);
     gl.disable(gl.CULL_FACE);
@@ -15178,13 +15262,6 @@ var SceneJS_ProgramSourceFactory = new (function () {
         return src;
     };
 
-
-    /*===================================================================================================================
-     *
-     * Rendering vertex shader
-     *
-     *==================================================================================================================*/
-
     this._isTexturing = function (states) {
         if (states.texture.layers && states.texture.layers.length > 0) {
             if (states.geometry.uvBuf || states.geometry.uvBuf2) {
@@ -15195,6 +15272,10 @@ var SceneJS_ProgramSourceFactory = new (function () {
             }
         }
         return false;
+    };
+
+    this._isCubeMapping = function (states) {
+        return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
     };
 
     this._hasNormals = function (states) {
@@ -15491,6 +15572,7 @@ var SceneJS_ProgramSourceFactory = new (function () {
         var fragmentHooks = customFragmentShader.hooks || {};
 
         var texturing = this._isTexturing(states);
+        var cubeMapping = this._isCubeMapping(states);
         var normals = this._hasNormals(states);
         var clipping = states.clips.clips.length > 0;
 
@@ -15508,7 +15590,7 @@ var SceneJS_ProgramSourceFactory = new (function () {
         }
 
         /*-----------------------------------------------------------------------------------
-         * Variables - Clipping
+         * Variables
          *----------------------------------------------------------------------------------*/
 
         if (clipping) {
@@ -15536,8 +15618,13 @@ var SceneJS_ProgramSourceFactory = new (function () {
             }
         }
 
-        if (!states.cubemap.empty && normals) {
-            src.push("uniform samplerCube SCENEJS_uEnvSampler;");
+        if (cubeMapping) {
+            var layer;
+            for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
+                layer = states.cubemap.layers[i];
+                src.push("uniform samplerCube SCENEJS_uCubeMapSampler" + i + ";");
+                src.push("uniform float SCENEJS_uCubeMapIntensity" + i + ";");
+            }
         }
 
         /* True when lighting
@@ -15548,6 +15635,7 @@ var SceneJS_ProgramSourceFactory = new (function () {
         src.push("uniform bool  SCENEJS_uClipping;");
         src.push("uniform bool  SCENEJS_uAmbient;");
         src.push("uniform bool  SCENEJS_uDiffuse;");
+        src.push("uniform bool  SCENEJS_uReflection;");
 
         /* True when rendering transparency
          */
@@ -15727,7 +15815,7 @@ var SceneJS_ProgramSourceFactory = new (function () {
                 }
 
                 /* Alpha from Texture
-                 * */
+                 */
                 if (layer.applyTo == "alpha") {
                     if (layer.blendMode == "multiply") {
                         src.push("alpha = alpha * (SCENEJS_uLayer" + i + "BlendFactor * texture2D(SCENEJS_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).b);");
@@ -15762,6 +15850,14 @@ var SceneJS_ProgramSourceFactory = new (function () {
                     }
                 }
 
+                if (layer.applyTo == "shine") {
+                    if (layer.blendMode == "multiply") {
+                        src.push("shine  = shine * (SCENEJS_uLayer" + i + "BlendFactor * texture2D(SCENEJS_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                    } else {
+                        src.push("shine = ((1.0 - SCENEJS_uLayer" + i + "BlendFactor) * shine) + (SCENEJS_uLayer" + i + "BlendFactor * texture2D(SCENEJS_uSampler" + i + ", vec2(textureCoord.x, 1.0 - textureCoord.y)).r);");
+                    }
+                }
+
                 if (layer.applyTo == "normals" && normals) {
                     src.push("vec3 bump = normalize(texture2D(SCENEJS_uSampler" + i + ", vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
                     src.push("viewNormalVec *= -bump;");
@@ -15772,13 +15868,22 @@ var SceneJS_ProgramSourceFactory = new (function () {
             }
         }
 
-        if (!states.cubemap.empty && normals) {
+        if (cubeMapping) {
+            src.push("if (SCENEJS_uReflection) {"); // Flag which can enable/disable reflection
             src.push("vec3 envLookup = reflect(normalize(SCENEJS_vWorldEyeVec), normalize(SCENEJS_vWorldNormal));");
-            src.push("envLookup.y = envLookup.y * -1.0;");
-            src.push("vec4 envColor = textureCube(SCENEJS_uEnvSampler, envLookup);");
-            src.push("color = color * envColor.rgb;");
+            src.push("envLookup.y = envLookup.y * -1.0;"); // Need to flip textures on Y-axis for some reason
+            src.push("vec4 envColor;");
+            for (var i = 0, len = states.cubemap.layers.length; i < len; i++) {
+                layer = states.cubemap.layers[i];
+                    src.push("envColor = textureCube(SCENEJS_uCubeMapSampler" + i + ", envLookup);");
+                    src.push("color = mix(color, envColor.rgb, specular * SCENEJS_uCubeMapIntensity" + i + ");");
+//                if (layer.applyTo == "specular") {
+//                    src.push("envColor = textureCube(SCENEJS_uCubeMapSampler" + i + ", envLookup);");
+//                    src.push("color = color * SCENEJS_uCubeMapBlendFactor" + i + " * envColor.rgb;");
+//                }
+            }
+            src.push("}"); // if (SCENEJS_uReflection)
         }
-
 
         src.push("  vec4    fragColor;");
 
@@ -16274,50 +16379,14 @@ SceneJS.RenderContext.prototype.getWorldPos = function(offset) {
  *
  * @private
  */
-var SceneJS_Chunk = function(id, type, program, core) {
-
-    /**
-     * The type of the corresponding {@link SceneJS_Core}
-     * @type String
-     * @see {SceneJS_Core#type}
-     */
-    this.type = type;
-
-    /**
-     * The chunk ID
-     * @type Number
-     */
-    this.id = id;
-
-    /**
-     * The program this chunk will render with
-     * @type {SceneJS_Program}
-     */
-    this.program = program;
-
-    /**
-     * The state core rendered by this chunk
-     * @type {SceneJS_Core}
-     */
-    this.core = core;
-
-    /**
-     * Count of {@link SceneJS_Object} instances using this chunk
-     * @type Number
-     */
-    this.useCount = 0;
-
-    if (this.build) {
-        this.build();
-    }
-};
+var SceneJS_Chunk = function() {};
 
 /**
  * Initialises the chunk. This is called within the constructor, and also to by the owner {@link SceneJS_ChunkFactory}
  * when recycling a chunk from its free chunk pool. This method sets the given properties on the chunk, then calls the
  * chunk instance's <b>build</b> method if the chunk has been augmented with one.
  *
- * @param {Number} id Chunk ID
+ * @param {String} id Chunk ID
  * @param {SceneJS_Program} program Program to render the chunk
  * @param {SceneJS_Core} core The state core rendered by this chunk
  */
@@ -16370,8 +16439,8 @@ SceneJS_ChunkFactory.createChunkType = function(params) {
     var supa = SceneJS_Chunk;
 
     var chunkClass = function() { // Create the class
-        supa.apply(this, arguments);
-        this.type = params.type;
+        this.useCount = 0;
+        this.init.apply(this, arguments);
     };
 
     chunkClass.prototype = new supa();              // Inherit from base class
@@ -16423,7 +16492,7 @@ SceneJS_ChunkFactory.prototype.getChunk = function(chunkId, type, program, core)
 
     } else {        // Instantiate a fresh chunk
 
-        chunk = new chunkClass(chunkId, type, program, core); // Create new chunk
+        chunk = new chunkClass(chunkId, program, core); // Create new chunk
     }
 
     chunk.useCount = 1;
@@ -16446,6 +16515,10 @@ SceneJS_ChunkFactory.prototype.putChunk = function (chunk) {
 
     if (--chunk.useCount <= 0) {    // Release shared core if use count now zero
 
+        if (chunk.recycle) {
+            chunk.recycle();
+        }
+
         this._chunks[chunk.id] = null;
 
         var freeChunks = SceneJS_ChunkFactory._freeChunks[chunk.type];
@@ -16455,7 +16528,7 @@ SceneJS_ChunkFactory.prototype.putChunk = function (chunk) {
 };
 
 /**
- * Re-cache shader variable locations for each active chunk
+ * Re-cache shader variable locations for each active chunk and reset VAOs if any
  */
 SceneJS_ChunkFactory.prototype.webglRestored = function () {
 
@@ -16640,6 +16713,7 @@ SceneJS_ChunkFactory.createChunkType({
         this._uClippingDraw = draw.getUniformLocation("SCENEJS_uClipping");
         this._uAmbientDraw = draw.getUniformLocation("SCENEJS_uAmbient");
         this._uDiffuseDraw = draw.getUniformLocation("SCENEJS_uDiffuse");
+        this._uReflectionDraw = draw.getUniformLocation("SCENEJS_uReflection");
 
         var pick = this.program.pick;
 
@@ -16681,7 +16755,8 @@ SceneJS_ChunkFactory.createChunkType({
                                (this.core.specular ? 4 : 0) +
                                (this.core.clipping ? 8 : 0) +
                                (this.core.ambient ? 16 : 0) +
-                               (this.core.diffuse ? 32 : 0);
+                               (this.core.diffuse ? 32 : 0) +
+                               (this.core.reflection ? 64 : 0);
             if (this.program.drawUniformFlags != drawUniforms) {
                 gl.uniform1i(this._uBackfaceTexturingDraw, this.core.backfaceTexturing);
                 gl.uniform1i(this._uBackfaceLightingDraw, this.core.backfaceLighting);
@@ -16689,6 +16764,7 @@ SceneJS_ChunkFactory.createChunkType({
                 gl.uniform1i(this._uClippingDraw, this.core.clipping);
                 gl.uniform1i(this._uAmbientDraw, this.core.ambient);
                 gl.uniform1i(this._uDiffuseDraw, this.core.diffuse);
+                gl.uniform1i(this._uReflectionDraw, this.core.reflection);
                 this.program.drawUniformFlags = drawUniforms;
             }
         }
@@ -16753,6 +16829,9 @@ SceneJS_ChunkFactory.createChunkType({
         this._aUV2Draw = draw.getAttribute("SCENEJS_aUVCoord2");
         this._aColorDraw = draw.getAttribute("SCENEJS_aVertexColor");
 
+        this.VAO = null;
+        this.VAOHasInterleavedBuf = false;
+
         var pick = this.program.pick;
 
         this._aVertexPick = pick.getAttribute("SCENEJS_aVertex");
@@ -16762,57 +16841,89 @@ SceneJS_ChunkFactory.createChunkType({
         this._aColorPick = pick.getAttribute("SCENEJS_aVertexColor");
     },
 
+    recycle:function () {
+        if (this.VAO) {
+            // Guarantee that the old VAO is deleted immediately when recycling the object.
+            var VAOExt = this.program.gl.getExtension("OES_vertex_array_object");
+            VAOExt.deleteVertexArrayOES(this.VAO);
+        }
+    },
+
     draw:function (ctx) {
 
         var gl = this.program.gl;
 
         if (ctx.geoChunkId != this.id) { // HACK until we have distinct state chunks for VBOs and draw call
-
-            if (this.core.interleavedBuf && !this.core.interleavedBuf.dirty) {
-                this.core.interleavedBuf.bind();
-                if (this._aVertexDraw && !ctx.vertexBuf) {
-                    this._aVertexDraw.bindInterleavedFloatArrayBuffer(3, this.core.interleavedStride, this.core.interleavedPositionOffset);
-                }
-                if (this._aNormalDraw && !ctx.normalBuf) {
-                    this._aNormalDraw.bindInterleavedFloatArrayBuffer(3, this.core.interleavedStride, this.core.interleavedNormalOffset);
-                }
-                if (this._aUVDraw && !ctx.uvBuf) {
-                    this._aUVDraw.bindInterleavedFloatArrayBuffer(2, this.core.interleavedStride, this.core.interleavedUVOffset);
-                }
-                if (this._aUV2Draw && !ctx.uv2Buf) {
-                    this._aUV2Draw.bindInterleavedFloatArrayBuffer(2, this.core.interleavedStride, this.core.interleavedUV2Offset);
-                }
-                if (this._aColorDraw && !ctx.colorBuf) {
-                    this._aColorDraw.bindInterleavedFloatArrayBuffer(4, this.core.interleavedStride, this.core.interleavedColorOffset);
-                }
-            } else {
-                if (this._aVertexDraw && !ctx.vertexBuf) {
-                    this._aVertexDraw.bindFloatArrayBuffer(this.core.vertexBuf);
-                }
-
-                if (this._aNormalDraw && !ctx.normalBuf) {
-                    this._aNormalDraw.bindFloatArrayBuffer(this.core.normalBuf);
-                }
-
-                if (this._aUVDraw && !ctx.uvBuf) {
-                    this._aUVDraw.bindFloatArrayBuffer(this.core.uvBuf);
-                }
-
-                if (this._aUV2Draw && !ctx.uvBuf2) {
-                    this._aUV2Draw.bindFloatArrayBuffer(this.core.uvBuf2);
-                }
-
-                if (this._aColorDraw && !ctx.colorBuf) {
-                    this._aColorDraw.bindFloatArrayBuffer(this.core.colorBuf);
-                }
+            var ctxBufsActive = ctx.vertexBuf || ctx.normalBuf || ctx.uvBuf || ctx.uvBuf2 || ctx.colorBuf;
+            if (this.VAO && (ctxBufsActive ||
+                this.core.interleavedBuf && this.core.interleavedBuf.dirty && this.VAOHasInterleavedBuf)) {
+                // Need to recreate VAO to refer to separate buffers, or can't use VAO due to buffers
+                // specified outside.
+                ctx.VAO.deleteVertexArrayOES(this.VAO);
+                this.VAO = null;
             }
+            if (this.VAO) {
+                ctx.VAO.bindVertexArrayOES(this.VAO);
+            } else {
+                var useInterleavedBuf = (this.core.interleavedBuf && !this.core.interleavedBuf.dirty);
+                if (ctx.VAO && !ctxBufsActive) {
+                    this.VAO = ctx.VAO.createVertexArrayOES();
+                    ctx.VAO.bindVertexArrayOES(this.VAO);
+                    this.VAOHasInterleavedBuf = useInterleavedBuf;
+                }
 
-            this.core.indexBuf.bind();
+                if (useInterleavedBuf) {
+                    this.core.interleavedBuf.bind();
+                    if (this._aVertexDraw && !ctx.vertexBuf) {
+                        this._aVertexDraw.bindInterleavedFloatArrayBuffer(3, this.core.interleavedStride, this.core.interleavedPositionOffset);
+                    }
+                    if (this._aNormalDraw && !ctx.normalBuf) {
+                        this._aNormalDraw.bindInterleavedFloatArrayBuffer(3, this.core.interleavedStride, this.core.interleavedNormalOffset);
+                    }
+                    if (this._aUVDraw && !ctx.uvBuf) {
+                        this._aUVDraw.bindInterleavedFloatArrayBuffer(2, this.core.interleavedStride, this.core.interleavedUVOffset);
+                    }
+                    if (this._aUV2Draw && !ctx.uv2Buf) {
+                        this._aUV2Draw.bindInterleavedFloatArrayBuffer(2, this.core.interleavedStride, this.core.interleavedUV2Offset);
+                    }
+                    if (this._aColorDraw && !ctx.colorBuf) {
+                        this._aColorDraw.bindInterleavedFloatArrayBuffer(4, this.core.interleavedStride, this.core.interleavedColorOffset);
+                    }
+                } else {
+                    if (this._aVertexDraw && !ctx.vertexBuf) {
+                        this._aVertexDraw.bindFloatArrayBuffer(this.core.vertexBuf);
+                    }
 
-            ctx.geoChunkId = this.id;
+                    if (this._aNormalDraw && !ctx.normalBuf) {
+                        this._aNormalDraw.bindFloatArrayBuffer(this.core.normalBuf);
+                    }
+
+                    if (this._aUVDraw && !ctx.uvBuf) {
+                        this._aUVDraw.bindFloatArrayBuffer(this.core.uvBuf);
+                    }
+
+                    if (this._aUV2Draw && !ctx.uvBuf2) {
+                        this._aUV2Draw.bindFloatArrayBuffer(this.core.uvBuf2);
+                    }
+
+                    if (this._aColorDraw && !ctx.colorBuf) {
+                        this._aColorDraw.bindFloatArrayBuffer(this.core.colorBuf);
+                    }
+                }
+
+                this.core.indexBuf.bind();
+            }
         }
 
         gl.drawElements(this.core.primitive, this.core.indexBuf.numItems, gl.UNSIGNED_SHORT, 0);
+
+        if (this.VAO) {
+            // We don't want following nodes that don't use their own VAOs to muck up
+            // this node's VAO, so we need to unbind it.
+            ctx.VAO.bindVertexArrayOES(null);
+        } else {
+            ctx.geoChunkId = this.id;
+        }
     },
 
     pick:function (ctx) {
@@ -17616,9 +17727,35 @@ SceneJS_ChunkFactory.createChunkType({
 
     type: "cubemap",
 
+    build: function () {
+        this._uCubeMapSampler = this._uCubeMapSampler || [];
+        this._uCubeMapIntensity = this._uCubeMapIntensity || [];
+        var layers = this.core.layers;
+        if (layers) {
+            var layer;
+            var draw = this.program.draw;
+            for (var i = 0, len = layers.length; i < len; i++) {
+                layer = layers[i];
+                this._uCubeMapSampler[i] = "SCENEJS_uCubeMapSampler" + i;
+                this._uCubeMapIntensity[i] = draw.getUniform("SCENEJS_uCubeMapIntensity" + i);
+            }
+        }
+    },
+
     draw: function (ctx) {
-        if (this.core.texture) {
-            this.program.draw.bindTexture("SCENEJS_uEnvSampler", this.core.texture, ctx.textureUnit++);
+        var layers = this.core.layers;
+        if (layers) {
+            var layer;
+            var draw = this.program.draw;
+            for (var i = 0, len = layers.length; i < len; i++) {
+                layer = layers[i];
+                if (this._uCubeMapSampler[i] && layer.texture) {
+                    draw.bindTexture(this._uCubeMapSampler[i], layer.texture, ctx.textureUnit++);
+                    if (this._uCubeMapIntensity[i]) {
+                        this._uCubeMapIntensity[i].setValue(layer.intensity);
+                    }
+                }
+            }
         }
     }
 });
