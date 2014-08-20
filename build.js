@@ -125,8 +125,20 @@
             "src/core/config.js",
             "src/core/log.js",
             "src/core/math.js",
-            "src/core/webgl.js",
             "src/core/status.js",
+
+            // WebGL wrappers
+
+            "src/core/webgl/webgl.js",
+            "src/core/webgl/arrayBuffer.js",
+            "src/core/webgl/attribute.js",
+            "src/core/webgl/enums.js",
+            "src/core/webgl/renderBuffer.js",
+            "src/core/webgl/program.js",
+            "src/core/webgl/sampler.js",
+            "src/core/webgl/shader.js",
+            "src/core/webgl/texture2d.js",
+            "src/core/webgl/uniform.js",
 
             // Scene graph classes
 
@@ -140,7 +152,7 @@
             "src/core/scene/clips.js",
             "src/core/scene/enable.js",
             "src/core/scene/flags.js",
-            "src/core/scene/framebuf.js",
+            // "src/core/scene/framebuf.js",
             "src/core/scene/geometry.js",
             "src/core/scene/layer.js",
             "src/core/scene/library.js",
@@ -159,6 +171,7 @@
             "src/core/scene/style.js",
             "src/core/scene/tag.js",
             "src/core/scene/texture.js",
+            "src/core/scene/textureMap.js",
             "src/core/scene/reflect.js",
             "src/core/scene/xform.js",
             "src/core/scene/matrix.js",
@@ -187,7 +200,7 @@
             "src/core/display/chunks/clipsChunk.js",
             "src/core/display/chunks/drawChunk.js",
             "src/core/display/chunks/flagsChunk.js",
-            "src/core/display/chunks/framebufChunk.js",
+            // "src/core/display/chunks/framebufChunk.js",
             "src/core/display/chunks/geometryChunk.js",
             "src/core/display/chunks/lightsChunk.js",
             "src/core/display/chunks/listenersChunk.js",

@@ -30,13 +30,9 @@ new (function () {
 
     SceneJS.TextureMap.prototype._init = function (params) {
 
-        if (this._core.useCount == 1) { // This node is the resource definer
+        var self = this;
 
-            if (!(params.uri || params.src || params.framebuf || params.image || params.video)) {
-                throw SceneJS_error.fatalError(
-                    SceneJS.errors.NODE_CONFIG_EXPECTED,
-                    "texture has no uri, src, framebuf, image or video property");
-            }
+        if (this._core.useCount == 1) { // This node is the resource definer
 
             if (params.applyFrom) {
                 if (params.applyFrom != "uv" &&
@@ -81,9 +77,9 @@ new (function () {
             this._core = SceneJS._apply(params, {
                 waitForLoad: params.waitForLoad == undefined ? true : params.waitForLoad,
                 texture: null,
-                applyFrom: params.applyFrom || "uv",
-                applyTo: params.applyTo || "baseColor",
-                blendMode: params.blendMode || "multiply",
+                applyFrom: !!params.applyFrom ? params.applyFrom : "uv",
+                applyTo: !!params.applyTo ? params.applyTo : "baseColor",
+                blendMode: !!params.blendMode ? params.blendMode : "multiply",
                 blendFactor: (params.blendFactor != undefined && params.blendFactor != null) ? params.blendFactor : 1.0,
                 translate: { x: 0, y: 0},
                 scale: { x: 1, y: 1 },
@@ -94,31 +90,35 @@ new (function () {
             });
 
             if (params.src) { // Load from URL
-                self._core.src = params.src;
+                this._core.src = params.src;
                 this._loadTexture(params.src);
 
             } else if (params.image) { // Create from image
-                self._core.image = params.image;
+                this._core.image = params.image;
                 this._initTexture(params.image);
 
-            } else if (params.framebuf) { // Render to this texture
-                this.setFramebuf(params.framebuf);
+            } else if (params.target) { // Render to this texture
+                this.getScene().getNode(params.target,
+                    function (target) {
+                        self.setTarget(target);
+                    });
             }
+
+            this._core.webglRestored = function () {
+                if (self._core.src) {
+                    self._loadTexture(self._core.src);
+
+                } else if (self._core.image) {
+                    self._initTexture(self._core.image);
+
+                } else if (self._core.target) {
+//                    self.getScene().getNode(params.target,
+//                        function (target) {
+//                            self.setTarget(self._core.target);
+//                        });
+                }
+            };
         }
-
-        var self = this;
-
-        this._core.webglRestored = function () {
-            if (self._core.src) {
-                self._loadTexture(self._core.src);
-
-            } else if (self._core.image) {
-                self._initTexture(self._core.image);
-
-            } else if (self._core.framebuf) {
-                self.setFramebuf(self._core.framebuf);
-            }
-        };
     };
 
     function buildMatrix() {
@@ -142,7 +142,6 @@ new (function () {
             } else {
                 this.matrixAsArray.set(this.matrix);
             }
-            this.matrixAsArray = new Float32Array(this.matrix); // TODO - reinsert into array
         }
         this._matrixDirty = false;
     }
@@ -174,7 +173,7 @@ new (function () {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._ensureImageSizePowerOfTwo(image));
         if (!exists) {
-            this._core.texture = new SceneJS_webgl_Texture2D(gl, {
+            this._core.texture = new SceneJS._webgl.Texture2D(gl, {
                 texture: texture, // WebGL texture object
                 minFilter: this._getGLOption("minFilter", gl.LINEAR_MIPMAP_NEAREST),
                 magFilter: this._getGLOption("magFilter", gl.LINEAR),
@@ -232,7 +231,7 @@ new (function () {
         if (value == undefined) {
             return defaultVal;
         }
-        var glName = SceneJS_webgl_enumMap[value];
+        var glName = SceneJS._webgl.enumMap[value];
         if (glName == undefined) {
             throw SceneJS_error.fatalError(
                 SceneJS.errors.ILLEGAL_NODE_CONFIG,
@@ -248,27 +247,27 @@ new (function () {
     SceneJS.TextureMap.prototype.setSrc = function (src) {
         this._core.image = null;
         this._core.src = src;
-        this._core.framebuf = null;
+        this._core.target = null;
         this._loadTexture(src);
     };
 
     SceneJS.TextureMap.prototype.setImage = function (image) {
         this._core.image = image;
         this._core.src = null;
-        this._core.framebuf = null;
+        this._core.target = null;
         this._initTexture(image);
     };
 
-    SceneJS.TextureMap.prototype.setFramebuf = function (framebuf) {
-        if (!framebuf.type == "framebuf") {
-            console.log("Not a 'framebuf' node - ignoring");
+    SceneJS.TextureMap.prototype.setTarget = function (target) {
+        if (target.type != "colorTarget" && target.type != "depthTarget") {
+            console.log("Target node type not compatible: " + target.type);
             return;
         }
         delete this._core.src;
-        this._core.framebuf = framebuf;
+        this._core.target = target;
         this._core.src = null;
         this._core.image = null;
-        this._core.texture = framebuf._core.framebuf.getTexture(); // TODO: what happens when the framebuf is destroyed?
+        this._core.texture = target._core.renderBuf.getTexture(); // TODO: what happens when the target is destroyed?
         this._engine.display.imageDirty = true;
     };
 
@@ -374,7 +373,7 @@ new (function () {
 
     SceneJS.TextureMap.prototype._destroy = function () {
         if (this._core.useCount == 1) { // Last core user
-            if (this._core.texture && !this._core.framebuf) { // Don't wipe out framebuf texture
+            if (this._core.texture && !this._core.target) { // Don't wipe out target texture
                 this._core.texture.destroy();
                 this._core.texture = null;
             }

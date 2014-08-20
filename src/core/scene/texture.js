@@ -57,11 +57,11 @@ new (function () {
 
                 layerParams = params.layers[i];
 
-                if (!layerParams.source && !layerParams.uri && !layerParams.src && !layerParams.framebuf && !layerParams.video) {
+                if (!layerParams.source && !layerParams.uri && !layerParams.src && !layerParams.colorTarget && !layerParams.video) {
 
                     throw SceneJS_error.fatalError(
                         SceneJS.errors.NODE_CONFIG_EXPECTED,
-                        "texture layer " + i + "  has no uri, src, source, framebuf, video or canvasId specified");
+                        "texture layer " + i + "  has no uri, src, source, colorTarget, video or canvasId specified");
                 }
 
                 if (layerParams.applyFrom) {
@@ -92,11 +92,11 @@ new (function () {
                 }
 
                 if (layerParams.blendMode) {
-                    if (layerParams.blendMode != "add" && layerParams.blendMode != "multiply") {
+                    if (layerParams.blendMode != "add" && layerParams.blendMode != "multiply" && layerParams.blendMode != "mix") {
                         throw SceneJS_error.fatalError(
                             SceneJS.errors.NODE_CONFIG_EXPECTED,
                             "texture layer " + i + " blendMode value is unsupported - " +
-                                "should be either 'add' or 'multiply'");
+                                "should be either 'add', 'multiply' or 'mix'");
                     }
                 }
 
@@ -120,10 +120,10 @@ new (function () {
 
                 this._setLayerTransform(layerParams, layer);
 
-                if (layer.framebuf) { // Create from a framebuf node preceeding this texture in the scene graph
-                    var targetNode = this._engine.findNode(layer.framebuf);
-                    if (targetNode && targetNode.type == "framebuf") {
-                        layer.texture = targetNode._core.framebuf.getTexture(); // TODO: what happens when the framebuf is destroyed?
+                if (layer.colorTarget) { // Create from a colorTarget node preceeding this texture in the scene graph
+                    var targetNode = this._engine.findNode(layer.colorTarget);
+                    if (targetNode && targetNode.type == "colorTarget") {
+                        layer.texture = targetNode._core.colorTarget.getTexture(); // TODO: what happens when the colorTarget is destroyed?
                     }
                 } else { // Create from texture node's layer configs
                     this._loadLayerTexture(gl, layer);
@@ -268,7 +268,7 @@ new (function () {
 
     SceneJS.Texture.prototype._setLayerTexture = function (gl, layer, texture) {
 
-        layer.texture = new SceneJS_webgl_Texture2D(gl, {
+        layer.texture = new SceneJS._webgl.Texture2D(gl, {
             texture:texture, // WebGL texture object
             minFilter:this._getGLOption("minFilter", gl, layer, gl.LINEAR_MIPMAP_NEAREST),
             magFilter:this._getGLOption("magFilter", gl, layer, gl.LINEAR),
@@ -299,7 +299,7 @@ new (function () {
         if (value == undefined) {
             return defaultVal;
         }
-        var glName = SceneJS_webgl_enumMap[value];
+        var glName = SceneJS._webgl.enumMap[value];
         if (glName == undefined) {
             throw SceneJS_error.fatalError(
                 SceneJS.errors.ILLEGAL_NODE_CONFIG,

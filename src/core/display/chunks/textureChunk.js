@@ -21,16 +21,18 @@ SceneJS_ChunkFactory.createChunkType({
 
                 this._uTexSampler[i] = "SCENEJS_uSampler" + i;
 
-                this._uTexMatrix[i] = layer.matrixAsArray
-                        ? draw.getUniform("SCENEJS_uLayer" + i + "Matrix")
-                        : null;
+//                this._uTexMatrix[i] = layer.matrixAsArray
+//                        ? draw.getUniform("SCENEJS_uLayer" + i + "Matrix")
+//                        : null;
+
+                this._uTexMatrix[i] = draw.getUniform("SCENEJS_uLayer" + i + "Matrix");
 
                 this._uTexBlendFactor[i] = draw.getUniform("SCENEJS_uLayer" + i + "BlendFactor");
             }
         }
     },
 
-    draw : function(ctx) {
+    draw : function(frameCtx) {
 
         var layers = this.core.layers;
 
@@ -45,7 +47,7 @@ SceneJS_ChunkFactory.createChunkType({
 
                 if (this._uTexSampler[i] && layer.texture) {    // Lazy-loads
 
-                    draw.bindTexture(this._uTexSampler[i], layer.texture, ctx.textureUnit++);
+                    draw.bindTexture(this._uTexSampler[i], layer.texture, frameCtx.textureUnit++);
 
                     if (layer._matrixDirty && layer.buildMatrix) {
                         layer.buildMatrix.call(layer);
@@ -65,8 +67,8 @@ SceneJS_ChunkFactory.createChunkType({
             }
         }
 
-        if (ctx.textureUnit > 10) { // TODO: Find how many textures allowed
-            ctx.textureUnit = 0;
+        if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+            frameCtx.textureUnit = 0;
         }
     }
 });
